@@ -55,6 +55,12 @@ class GLPlotWidget(QGLWidget):
 
                 if item[2] == 'Up':
                     item[1] = y + item[3]
+                elif item[2] == 'Down':
+                    item[1] = y - item[3]
+                elif item[2] == 'Right':
+                    item[0] = x + item[3]
+                elif item[2] == 'Left':
+                    item[0] = x - item[3]  
 
     def draw_player(self):
 
@@ -152,13 +158,13 @@ if __name__ == '__main__':
                     self.widget.player.y -= 1
 
                 if key == QtCore.Qt.Key_Up:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, self.widget.player.color, 'Up', 2)
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, COLOURS['white'], 'Up', 2)
                 if key == QtCore.Qt.Key_Down:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, self.widget.player.color, 'Down', 0)
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, COLOURS['white'], 'Down', 2)
                 if key == QtCore.Qt.Key_Right:
-                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, self.widget.player.color, 'Right', 0)
+                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, COLOURS['white'], 'Right', 2)
                 if key == QtCore.Qt.Key_Left:
-                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, self.widget.player.color, 'Left', 0)
+                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, COLOURS['white'], 'Left', 2)
 
 
                 if key == QtCore.Qt.Key_Space:
