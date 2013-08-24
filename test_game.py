@@ -41,8 +41,8 @@ class GLPlotWidget(QGLWidget):
     def draw_square(self, x, y, size=1):
         gl.glRectf(x, y, x + size, y + size)
 
-    def add_egg(self, x, y, color=COLOURS['white']):
-        self.eggs[color].append((x, y))
+    def add_egg(self, x, y, color=COLOURS['white'], direction=0, speed=0):
+        self.eggs[color].append([x, y, direction, speed])
 
     def draw_eggs(self):        
         for color, items in self.eggs.iteritems():
@@ -52,6 +52,9 @@ class GLPlotWidget(QGLWidget):
                 x = item[0]
                 y = item[1]
                 self.draw_square(x, y, 1)
+
+                if item[2] == 'Up':
+                    item[1] = y + item[3]
 
     def draw_player(self):
 
@@ -125,7 +128,7 @@ if __name__ == '__main__':
             QtCore.QObject.connect(self.button_timer, QtCore.SIGNAL("timeout()"), self.check)
 
             QtCore.QMetaObject.connectSlotsByName(self)
-            self.paint_timer.start(2560)
+            self.paint_timer.start(50)
             self.button_timer.start(60)
 
             self.resize(600, 400)
@@ -149,17 +152,17 @@ if __name__ == '__main__':
                     self.widget.player.y -= 1
 
                 if key == QtCore.Qt.Key_Up:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, self.widget.player.color)
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, self.widget.player.color, 'Up', 2)
                 if key == QtCore.Qt.Key_Down:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, self.widget.player.color)
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, self.widget.player.color, 'Down', 0)
                 if key == QtCore.Qt.Key_Right:
-                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, self.widget.player.color)
+                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, self.widget.player.color, 'Right', 0)
                 if key == QtCore.Qt.Key_Left:
-                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, self.widget.player.color)
+                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, self.widget.player.color, 'Left', 0)
 
 
                 if key == QtCore.Qt.Key_Space:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y, self.widget.player.color)
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y, self.widget.player.color, 'N', 0)
                 if key == QtCore.Qt.Key_1:
                     self.widget.player.color = COLOURS['white']
                 if key == QtCore.Qt.Key_2:
@@ -169,8 +172,6 @@ if __name__ == '__main__':
                 if key == QtCore.Qt.Key_4:
                     self.widget.player.color = COLOURS['black']
 
-            if len(self.keys) > 0:
-                self.widget.updateGL()
 
  
     # create the QT App and window
