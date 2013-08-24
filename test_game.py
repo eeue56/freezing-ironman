@@ -147,6 +147,17 @@ if __name__ == '__main__':
                     self.widget.player.y += 1
                 if key == QtCore.Qt.Key_S:
                     self.widget.player.y -= 1
+
+                if key == QtCore.Qt.Key_Up:
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, self.widget.player.color)
+                if key == QtCore.Qt.Key_Down:
+                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, self.widget.player.color)
+                if key == QtCore.Qt.Key_Right:
+                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, self.widget.player.color)
+                if key == QtCore.Qt.Key_Left:
+                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, self.widget.player.color)
+
+
                 if key == QtCore.Qt.Key_Space:
                     self.widget.add_egg(self.widget.player.x, self.widget.player.y, self.widget.player.color)
                 if key == QtCore.Qt.Key_1:
