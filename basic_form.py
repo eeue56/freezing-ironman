@@ -1,6 +1,7 @@
 
 class Characteristic(object):
     def __init__(self, value=0, min_value=0, max_value=100):
+        self.value = 0
         self.min_value = min_value
         self.max_value = max_value
 
@@ -20,6 +21,26 @@ class Characteristic(object):
     def set_value(self, value):
         self.value = value
         self.increase_by(0)
+
+    def __add__(self, other):
+        if isinstance(other, Characteristic):
+            return self.value + other.value
+        else:
+            return self.value + other
+
+    def __neg__(self, other):
+        if isinstance(other, Characteristic):
+            return self.value - other.value
+        else:
+            return self.value - other
+
+    def __iadd__(self, other):
+        if isinstance(other, Characteristic):
+            self.increase_by(other.value)
+        else:
+            self.increase_by(other)
+
+        return self
 
 
 
@@ -63,6 +84,15 @@ class Player(object):
                 fire_speed
                     The speed at which shots are fired
 
+                shot_size
+                    The size of the bullet shots
+
+                shot_range
+                    The range of the bullets 
+
+                damage
+                    The amount of damage dealt by this player
+
                 max_health
                     The max health of the player
 
@@ -84,7 +114,7 @@ class Player(object):
                 size
                     The player size. Affects hitbox only.
 
-                
+
 
         """
 
@@ -122,8 +152,16 @@ def test_characteristic():
         c.increase_by(-99)
         assert c.value == 1
 
+    def test_add():
+        c = Characteristic(10)
+        d = Characteristic(50)
+
+        assert c + d == 60
+        assert c + 50 == 60
+
     test_create()
     test_increase_by()
+    test_add()
 
 def test():
     test_characteristic()
