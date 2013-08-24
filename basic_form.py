@@ -81,6 +81,11 @@ class Player(object):
                 jumping_height
                     The height which the player can jump to
 
+                size
+                    The player size. Affects hitbox only.
+
+                
+
         """
 
         self.speed = Characteristic(50)
