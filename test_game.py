@@ -45,15 +45,22 @@ class GLPlotWidget(QGLWidget):
         self.eggs[color].append([x, y, direction, speed])
 
     def draw_eggs(self):        
+
         for color, items in self.eggs.iteritems():
+            print len(items)
             r, g, b = color
             gl.glColor3f(r, g, b)
-            for item in items:
+            for item in items[:]:
                 x = item[0]
                 y = item[1]
+
+                if x < 0 or x > 96 or y < 0 or y > 64:
+                    items.remove(item)
+                    continue
                 self.draw_square(x, y, 1)
 
                 if item[2] == 'Up':
+
                     item[1] = y + item[3]
                 elif item[2] == 'Down':
                     item[1] = y - item[3]
@@ -93,7 +100,6 @@ class GLPlotWidget(QGLWidget):
         r, g, b = COLOURS['grey']
         gl.glColor3f(r, g, b)
 
-        #self.draw_bunny(bunny_point[0], 20, bunny_point[1], 15)
         self.draw_eggs()
         self.draw_player()
 
@@ -121,7 +127,7 @@ if __name__ == '__main__':
             # initialize the GL widget
             self.widget = GLPlotWidget()
             self.color = COLOURS['white']
-            self.keys = []
+            self.keys = set()
 
             self.widget.setGeometry(0, 0, self.widget.width, self.widget.height)
             self.setCentralWidget(self.widget)
@@ -134,20 +140,24 @@ if __name__ == '__main__':
             QtCore.QObject.connect(self.button_timer, QtCore.SIGNAL("timeout()"), self.check)
 
             QtCore.QMetaObject.connectSlotsByName(self)
-            self.paint_timer.start(50)
-            self.button_timer.start(60)
+            self.paint_timer.start(40)
+            self.button_timer.start(35)
 
             self.resize(600, 400)
 
         def keyPressEvent(self, event):
-            self.keys.append(event.key())
+            self.keys.add(event.key())
 
         def keyReleaseEvent(self, event):
-            self.keys.remove(event.key())
+            try:
+                self.keys.remove(event.key())
+            except:
+                print event.key()
+                print self.keys
 
         def check(self):
+            for key in self.keys:  
 
-            for key in self.keys:
                 if key == QtCore.Qt.Key_A:
                     self.widget.player.x -= 1
                 if key == QtCore.Qt.Key_D:
