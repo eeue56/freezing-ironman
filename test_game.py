@@ -68,12 +68,15 @@ class GLPlotWidget(QGLWidget):
 
                 goto_break = False
 
-                for monster in self.monsters:
+                for monster in self.monsters[:]:
                     if monster.x < x < monster.x + 5 and monster.y < y < monster.y + 5:
                         items.remove(item)
-                        monster.health -= 1
+                        monster.health -= 0.5
                         monster.color = COLOURS['red']
                         goto_break = True
+
+                        if monster.health < 0:
+                            self.monsters.remove(monster)
                         break
 
                 if goto_break:
