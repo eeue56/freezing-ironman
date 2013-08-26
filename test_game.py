@@ -11,6 +11,7 @@ from random import choice
 COLOURS = { 'black' : (0, 0, 0),
             'other-grey' : (0.25, 0.25, 0.25),
             'grey' : (0.4, 0.4, 0.4),
+            'red' : (255, 0, 0),
             'white' : (1, 1, 1)}
 
 DIRECTIONS = {
@@ -35,6 +36,7 @@ class GLPlotWidget(QGLWidget):
     bunny_point = [30, 50]
     player = Player(20, 20)
     eggs = {v : [] for v in COLOURS.values()}
+    monsters = [Player(50, 40)]
  
     def initializeGL(self):
         """Initialize OpenGL, VBOs, upload data on the GPU, etc.
@@ -63,10 +65,23 @@ class GLPlotWidget(QGLWidget):
                 if x < 0 or x > 96 or y < 0 or y > 64:
                     items.remove(item)
                     continue
+
+                goto_break = False
+
+                for monster in self.monsters:
+                    if monster.x < x < monster.x + 5 and monster.y < y < monster.y + 5:
+                        items.remove(item)
+                        monster.health -= 1
+                        monster.color = COLOURS['red']
+                        goto_break = True
+                        break
+
+                if goto_break:
+                    continue
+
                 self.draw_square(x, y, 1)
 
                 if item[2] == 'Up':
-
                     item[1] = y + item[3]
                 elif item[2] == 'Down':
                     item[1] = y - item[3]
@@ -75,41 +90,43 @@ class GLPlotWidget(QGLWidget):
                 elif item[2] == 'Left':
                     item[0] = x - item[3]  
 
-    def draw_player(self):
+    def draw_player(self, player):
 
         gl.glPushMatrix()
 
-        r, g, b = self.player.color
+        r, g, b = player.color
         gl.glColor3f(r, g, b)
 
-        if self.player.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.player.x, self.player.x + 5):
-                for y in xrange(self.player.y, self.player.y + 2):
+        if player.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
+            for x in xrange(player.x, player.x + 5):
+                for y in xrange(player.y, player.y + 2):
                     self.draw_square(x, y)
-            if self.player.facing == DIRECTIONS['up']:
+            if player.facing == DIRECTIONS['up']:
                 self.draw_square(x - 3, y + 1)
                 self.draw_square(x - 2, y + 1)
                 self.draw_square(x - 2, y + 2)
                 self.draw_square(x - 1, y + 1)
             else:
-                y = self.player.y
+                y = player.y
                 self.draw_square(x - 3, y - 1)
                 self.draw_square(x - 2, y - 1)
                 self.draw_square(x - 2, y - 2)
                 self.draw_square(x - 1, y - 1)
         else:
-            for x in xrange(self.player.x, self.player.x + 2):
-                for y in xrange(self.player.y, self.player.y + 5):
+            for x in xrange(player.x, player.x + 2):
+                for y in xrange(player.y, player.y + 5):
                     self.draw_square(x, y)
-            if self.player.facing == DIRECTIONS['right']:
+            if player.facing == DIRECTIONS['right']:
                 self.draw_square(x + 1, y - 1)
                 self.draw_square(x + 1, y - 2)
+                self.draw_square(x + 1, y - 3)
+                self.draw_square(x + 2, y - 2)
             else:
-                y = self.player.y
-                self.draw_square(x - 3, y - 1)
-                self.draw_square(x - 2, y - 1)
-                self.draw_square(x - 2, y - 2)
+                x = player.x
                 self.draw_square(x - 1, y - 1)
+                self.draw_square(x - 1, y - 2)
+                self.draw_square(x - 1, y - 3)
+                self.draw_square(x - 2, y - 2)
        
 
         gl.glPopMatrix() 
@@ -128,7 +145,10 @@ class GLPlotWidget(QGLWidget):
         gl.glColor3f(r, g, b)
 
         self.draw_eggs()
-        self.draw_player()
+        self.draw_player(self.player)
+
+        for monster in self.monsters:
+            self.draw_player(monster)
 
     def resizeGL(self, width, height):
         """Called upon window resizing: reinitialize the viewport.
@@ -202,18 +222,18 @@ if __name__ == '__main__':
                     self.widget.add_egg(x + 2, y + 10, COLOURS['white'], 'Up', 2)
                     self.widget.player.facing = DIRECTIONS['up']
                 if key == QtCore.Qt.Key_Down:
-                    self.widget.add_egg(x, y - 10, COLOURS['white'], 'Down', 2)
+                    self.widget.add_egg(x + 2, y - 10, COLOURS['white'], 'Down', 2)
                     self.widget.player.facing = DIRECTIONS['down']
                 if key == QtCore.Qt.Key_Right:
-                    self.widget.add_egg(x + 10, y, COLOURS['white'], 'Right', 2)
+                    self.widget.add_egg(x + 10, y + 2, COLOURS['white'], 'Right', 2)
                     self.widget.player.facing = DIRECTIONS['right']
                 if key == QtCore.Qt.Key_Left:
-                    self.widget.add_egg(x - 10, y, COLOURS['white'], 'Left', 2)
+                    self.widget.add_egg(x - 10, y + 2, COLOURS['white'], 'Left', 2)
                     self.widget.player.facing = DIRECTIONS['left']
 
 
                 if key == QtCore.Qt.Key_Space:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y, self.widget.player.color, 'N', 0)
+                    self.widget.add_egg(x, y, self.widget.player.color, 'N', 0)
                 if key == QtCore.Qt.Key_1:
                     self.widget.player.color = COLOURS['white']
                 if key == QtCore.Qt.Key_2:
