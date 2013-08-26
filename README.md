@@ -3,17 +3,20 @@ freezing-ironman
 
 Stages of development:
 
-1. Identify main features of players. 
+1. Identify main features of players. (2Y:3N)
 2. Develop 2D twin stick shooter using some of these features as properties.
-	*	Develop displaying of players and monsters
-	*	Develop shooting
-	* 	Develop collision detection
-	*	Develop deaths
+	*	Develop displaying of players and monsters (Y)
+	*	Develop shooting (Y)
+	* 	Develop collision detection (Y)
+	*	Develop deaths (Y)
 	* 	Develop "exploding" effects
 	* 	Link in player class
 		* 	Tie shots to player properties
 		*	Tie damage and health to player properties
 		* 	Tie movement to player properties
+	* 	Create terrain and link collision detection
+	*	Create level structure. Each level should be designed so that different play styles reward players
+	*	Create backgrounds
 	*	Move and refactor to proper structure
 	*	Release game
 3. Add recording of moves made and send to the server. 
