@@ -13,12 +13,19 @@ COLOURS = { 'black' : (0, 0, 0),
             'grey' : (0.4, 0.4, 0.4),
             'white' : (1, 1, 1)}
 
+DIRECTIONS = {
+        'up' : 1,
+        'down' : 2,
+        'left' : 3,
+        'right' : 4
+}
+
 class Player(object):
     def __init__(self, x, y, health=3):
         self.x = x
         self.y = y
         self.health = health
-        self.is_exploded = False
+        self.facing = DIRECTIONS['up']
         self.color = COLOURS['grey']
 
 
@@ -47,7 +54,6 @@ class GLPlotWidget(QGLWidget):
     def draw_eggs(self):        
 
         for color, items in self.eggs.iteritems():
-            print len(items)
             r, g, b = color
             gl.glColor3f(r, g, b)
             for item in items[:]:
@@ -71,21 +77,42 @@ class GLPlotWidget(QGLWidget):
 
     def draw_player(self):
 
-        if self.player.is_exploded:
-            r, g, b = COLOURS['other-grey']
-            gl.glColor3f(r, g, b)
-            for x in xrange(self.player.x - 4, self.player.x + 5):
-                for y in xrange(self.player.y - 4, self.player.y + 5):
-                    if choice((True, False)):
-                        self.draw_square(x, y)
+        gl.glPushMatrix()
 
         r, g, b = self.player.color
         gl.glColor3f(r, g, b)
-        for x in xrange(self.player.x, self.player.x + 4):
-            for y in xrange(self.player.y, self.player.y + 3):
-                self.draw_square(x, y)
 
-            self.draw_square(x, y + 4)
+        if self.player.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
+            for x in xrange(self.player.x, self.player.x + 5):
+                for y in xrange(self.player.y, self.player.y + 2):
+                    self.draw_square(x, y)
+            if self.player.facing == DIRECTIONS['up']:
+                self.draw_square(x - 3, y + 1)
+                self.draw_square(x - 2, y + 1)
+                self.draw_square(x - 2, y + 2)
+                self.draw_square(x - 1, y + 1)
+            else:
+                y = self.player.y
+                self.draw_square(x - 3, y - 1)
+                self.draw_square(x - 2, y - 1)
+                self.draw_square(x - 2, y - 2)
+                self.draw_square(x - 1, y - 1)
+        else:
+            for x in xrange(self.player.x, self.player.x + 2):
+                for y in xrange(self.player.y, self.player.y + 5):
+                    self.draw_square(x, y)
+            if self.player.facing == DIRECTIONS['right']:
+                self.draw_square(x + 1, y - 1)
+                self.draw_square(x + 1, y - 2)
+            else:
+                y = self.player.y
+                self.draw_square(x - 3, y - 1)
+                self.draw_square(x - 2, y - 1)
+                self.draw_square(x - 2, y - 2)
+                self.draw_square(x - 1, y - 1)
+       
+
+        gl.glPopMatrix() 
 
     def paintGL(self):
         """Paint the scene.
@@ -156,6 +183,10 @@ if __name__ == '__main__':
                 print self.keys
 
         def check(self):
+
+            x = self.widget.player.x
+            y = self.widget.player.y
+
             for key in self.keys:  
 
                 if key == QtCore.Qt.Key_A:
@@ -168,13 +199,17 @@ if __name__ == '__main__':
                     self.widget.player.y -= 1
 
                 if key == QtCore.Qt.Key_Up:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y + 10, COLOURS['white'], 'Up', 2)
+                    self.widget.add_egg(x + 2, y + 10, COLOURS['white'], 'Up', 2)
+                    self.widget.player.facing = DIRECTIONS['up']
                 if key == QtCore.Qt.Key_Down:
-                    self.widget.add_egg(self.widget.player.x, self.widget.player.y - 10, COLOURS['white'], 'Down', 2)
+                    self.widget.add_egg(x, y - 10, COLOURS['white'], 'Down', 2)
+                    self.widget.player.facing = DIRECTIONS['down']
                 if key == QtCore.Qt.Key_Right:
-                    self.widget.add_egg(self.widget.player.x + 10, self.widget.player.y, COLOURS['white'], 'Right', 2)
+                    self.widget.add_egg(x + 10, y, COLOURS['white'], 'Right', 2)
+                    self.widget.player.facing = DIRECTIONS['right']
                 if key == QtCore.Qt.Key_Left:
-                    self.widget.add_egg(self.widget.player.x - 10, self.widget.player.y, COLOURS['white'], 'Left', 2)
+                    self.widget.add_egg(x - 10, y, COLOURS['white'], 'Left', 2)
+                    self.widget.player.facing = DIRECTIONS['left']
 
 
                 if key == QtCore.Qt.Key_Space:
