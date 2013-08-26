@@ -5,6 +5,17 @@ Stages of development:
 
 1. Identify main features of players. 
 2. Develop 2D twin stick shooter using some of these features as properties.
+	*	Develop displaying of players and monsters
+	*	Develop shooting
+	* 	Develop collision detection
+	*	Develop deaths
+	* 	Develop "exploding" effects
+	* 	Link in player class
+		* 	Tie shots to player properties
+		*	Tie damage and health to player properties
+		* 	Tie movement to player properties
+	*	Move and refactor to proper structure
+	*	Release game
 3. Add recording of moves made and send to the server. 
 4. Identify the best way of achieving low latency transfer of recordings. Possible solutions below
 	*	Save until end of each "match" and then said
