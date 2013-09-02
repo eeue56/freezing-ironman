@@ -21,6 +21,7 @@ DIRECTIONS = {
         'right' : 4
 }
 
+
 class Player(object):
     def __init__(self, x, y, health=3):
         self.x = x
@@ -169,6 +170,8 @@ class GLPlotWidget(QGLWidget):
 if __name__ == '__main__':
     # import numpy for generating random data points
     import sys
+
+
  
     # define a QT window with an OpenGL widget inside it
     class TestWindow(QtGui.QMainWindow):
@@ -245,6 +248,8 @@ if __name__ == '__main__':
                     self.widget.player.color = COLOURS['other-grey']
                 if key == QtCore.Qt.Key_4:
                     self.widget.player.color = COLOURS['black']
+
+                print key
 
 
  
