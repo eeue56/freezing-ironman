@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+
 from __future__ import division
 
 # PyQT4 imports
@@ -6,7 +8,8 @@ from PyQt4.QtOpenGL import QGLWidget
 # PyOpenGL imports
 import OpenGL.GL as gl
 import OpenGL.arrays.vbo as glvbo
-from random import choice
+
+from random import choice, randint
 
 COLOURS = { 'black' : (0, 0, 0),
             'other-grey' : (0.25, 0.25, 0.25),
@@ -21,14 +24,36 @@ DIRECTIONS = {
         'right' : 4
 }
 
+def random_color():
+    return tuple(y / 255 for y in (randint(0, 255), randint(0, 255), randint(0, 255)))
+
 
 class Player(object):
-    def __init__(self, x, y, health=3):
+    def __init__(self, x, y, health=3, color=COLOURS['grey']):
         self.x = x
         self.y = y
         self.health = health
         self.facing = DIRECTIONS['up']
-        self.color = COLOURS['grey']
+        self.color = color
+
+    def new_color(self):
+        o = []
+
+        for i in self.color:
+        
+            i *= 255
+        
+            if i < 5:
+                i += randint(10, 25)
+            elif i > 250:
+                i -= randint(10, 25)
+            else:
+                i += randint(-20, 25)
+
+            o.append(i / 255)
+
+        self.color = tuple(o)
+
 
 
 class GLPlotWidget(QGLWidget):
@@ -37,7 +62,7 @@ class GLPlotWidget(QGLWidget):
     bunny_point = [30, 50]
     player = Player(20, 20)
     eggs = {v : [] for v in COLOURS.values()}
-    monsters = [Player(50, 40)]
+    monsters = [Player(randint(0, 96), randint(0, 64), randint(15, 50), random_color()) for _ in xrange(randint(5, 20))]
  
     def initializeGL(self):
         """Initialize OpenGL, VBOs, upload data on the GPU, etc.
@@ -52,7 +77,7 @@ class GLPlotWidget(QGLWidget):
         gl.glRectf(x, y, x + size, y + size)
 
     def add_egg(self, x, y, color=COLOURS['white'], direction=0, speed=0):
-        self.eggs[color].append([x, y, direction, speed])
+        self.eggs[color].append([x, y, direction, speed, False])
 
     def draw_eggs(self):        
 
@@ -60,6 +85,10 @@ class GLPlotWidget(QGLWidget):
             r, g, b = color
             gl.glColor3f(r, g, b)
             for item in items[:]:
+
+                if item[4]:
+                    r1, g1, b1 = COLOURS['red']
+                    gl.glColor3f(r1, g1, b1)
                 x = item[0]
                 y = item[1]
 
@@ -72,16 +101,23 @@ class GLPlotWidget(QGLWidget):
                 for monster in self.monsters[:]:
                     if monster.x < x < monster.x + 5 and monster.y < y < monster.y + 5:
                         items.remove(item)
-                        monster.health -= 0.5
-                        monster.color = COLOURS['red']
+                        item[4] = True
+                        self.eggs[COLOURS['red']].append(item)
+                        r1, g1, b1 = COLOURS['red']
+
+                        monster.health -= 0.3
+                        monster.new_color()
                         goto_break = True
 
                         if monster.health < 0:
                             self.monsters.remove(monster)
                         break
 
+
                 if goto_break:
                     continue
+                else:
+                    gl.glColor3f(r, g, b)
 
                 self.draw_square(x, y, 1)
 
@@ -192,9 +228,14 @@ if __name__ == '__main__':
             self.button_timer = QtCore.QTimer()
             QtCore.QObject.connect(self.button_timer, QtCore.SIGNAL("timeout()"), self.check)
 
+            self.monster_timer = QtCore.QTimer()
+            QtCore.QObject.connect(self.monster_timer, QtCore.SIGNAL("timeout()"), self.move_monsters)
+
             QtCore.QMetaObject.connectSlotsByName(self)
-            self.paint_timer.start(40)
-            self.button_timer.start(35)
+            
+            self.paint_timer.start(30)
+            self.button_timer.start(25)
+            self.monster_timer.start(100)
 
             self.resize(600, 400)
 
@@ -205,8 +246,14 @@ if __name__ == '__main__':
             try:
                 self.keys.remove(event.key())
             except:
-                print event.key()
-                print self.keys
+                pass
+
+        def move_monsters(self):
+            for monster in self.widget.monsters:
+                if 4 < monster.x < 90:
+                    monster.x += randint(-1, 1)
+                if 2 < monster.y < 60:
+                    monster.y += randint(-1, 1)
 
         def check(self):
 
@@ -217,39 +264,38 @@ if __name__ == '__main__':
 
                 if key == QtCore.Qt.Key_A:
                     self.widget.player.x -= 1
-                if key == QtCore.Qt.Key_D:
+                elif key == QtCore.Qt.Key_D:
                     self.widget.player.x += 1
-                if key == QtCore.Qt.Key_W:
+                elif key == QtCore.Qt.Key_W:
                     self.widget.player.y += 1
-                if key == QtCore.Qt.Key_S:
+                elif key == QtCore.Qt.Key_S:
                     self.widget.player.y -= 1
 
-                if key == QtCore.Qt.Key_Up:
+                elif key == QtCore.Qt.Key_Up:
                     self.widget.add_egg(x + 2, y + 10, COLOURS['white'], 'Up', 2)
                     self.widget.player.facing = DIRECTIONS['up']
-                if key == QtCore.Qt.Key_Down:
+                elif key == QtCore.Qt.Key_Down:
                     self.widget.add_egg(x + 2, y - 10, COLOURS['white'], 'Down', 2)
                     self.widget.player.facing = DIRECTIONS['down']
-                if key == QtCore.Qt.Key_Right:
+                elif key == QtCore.Qt.Key_Right:
                     self.widget.add_egg(x + 10, y + 2, COLOURS['white'], 'Right', 2)
                     self.widget.player.facing = DIRECTIONS['right']
-                if key == QtCore.Qt.Key_Left:
+                elif key == QtCore.Qt.Key_Left:
                     self.widget.add_egg(x - 10, y + 2, COLOURS['white'], 'Left', 2)
                     self.widget.player.facing = DIRECTIONS['left']
 
 
-                if key == QtCore.Qt.Key_Space:
+                elif key == QtCore.Qt.Key_Space:
                     self.widget.add_egg(x, y, self.widget.player.color, 'N', 0)
-                if key == QtCore.Qt.Key_1:
+                elif key == QtCore.Qt.Key_1:
                     self.widget.player.color = COLOURS['white']
-                if key == QtCore.Qt.Key_2:
+                elif key == QtCore.Qt.Key_2:
                     self.widget.player.color = COLOURS['grey']
-                if key == QtCore.Qt.Key_3:
+                elif key == QtCore.Qt.Key_3:
                     self.widget.player.color = COLOURS['other-grey']
-                if key == QtCore.Qt.Key_4:
+                elif key == QtCore.Qt.Key_4:
                     self.widget.player.color = COLOURS['black']
 
-                print key
 
 
  
