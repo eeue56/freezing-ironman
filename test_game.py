@@ -86,9 +86,6 @@ class GLPlotWidget(QGLWidget):
             gl.glColor3f(r, g, b)
             for item in items[:]:
 
-                if item[4]:
-                    r1, g1, b1 = COLOURS['red']
-                    gl.glColor3f(r1, g1, b1)
                 x = item[0]
                 y = item[1]
 
@@ -100,12 +97,11 @@ class GLPlotWidget(QGLWidget):
 
                 for monster in self.monsters[:]:
                     if monster.x < x < monster.x + 5 and monster.y < y < monster.y + 5:
-                        items.remove(item)
+                        if item[4]:
+                            monster.health -= 0.9
                         item[4] = True
-                        self.eggs[COLOURS['red']].append(item)
-                        r1, g1, b1 = COLOURS['red']
 
-                        monster.health -= 0.3
+                        monster.health -= 0.5
                         monster.new_color()
                         goto_break = True
 
@@ -115,9 +111,13 @@ class GLPlotWidget(QGLWidget):
 
 
                 if goto_break:
-                    continue
+                    pass
                 else:
                     gl.glColor3f(r, g, b)
+
+                if item[4]:
+                    r1, g1, b1 = COLOURS['red']
+                    gl.glColor3f(r1, g1, b1)
 
                 self.draw_square(x, y, 1)
 
@@ -272,16 +272,16 @@ if __name__ == '__main__':
                     self.widget.player.y -= 1
 
                 elif key == QtCore.Qt.Key_Up:
-                    self.widget.add_egg(x + 2, y + 10, COLOURS['white'], 'Up', 2)
+                    self.widget.add_egg(x + 2, y + 7, COLOURS['white'], 'Up', 2)
                     self.widget.player.facing = DIRECTIONS['up']
                 elif key == QtCore.Qt.Key_Down:
-                    self.widget.add_egg(x + 2, y - 10, COLOURS['white'], 'Down', 2)
+                    self.widget.add_egg(x + 2, y - 7, COLOURS['white'], 'Down', 2)
                     self.widget.player.facing = DIRECTIONS['down']
                 elif key == QtCore.Qt.Key_Right:
-                    self.widget.add_egg(x + 10, y + 2, COLOURS['white'], 'Right', 2)
+                    self.widget.add_egg(x + 7, y + 2, COLOURS['white'], 'Right', 2)
                     self.widget.player.facing = DIRECTIONS['right']
                 elif key == QtCore.Qt.Key_Left:
-                    self.widget.add_egg(x - 10, y + 2, COLOURS['white'], 'Left', 2)
+                    self.widget.add_egg(x - 7, y + 2, COLOURS['white'], 'Left', 2)
                     self.widget.player.facing = DIRECTIONS['left']
 
 
