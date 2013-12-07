@@ -107,10 +107,7 @@ class Player(object):
                 regen_start_rate
                     The rate at which health will start regenerating
                     after taking damage
-
-                jumping_height
-                    The height which the player can jump to
-
+                    
                 size
                     The player size. Affects hitbox only.
 

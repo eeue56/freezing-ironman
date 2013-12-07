@@ -14,7 +14,7 @@ from random import choice, randint
 COLOURS = { 'black' : (0, 0, 0),
             'other-grey' : (0.25, 0.25, 0.25),
             'grey' : (0.4, 0.4, 0.4),
-            'red' : (255, 0, 0),
+            'red' :  (255, 0, 0),
             'white' : (1, 1, 1)}
 
 DIRECTIONS = {
@@ -58,7 +58,7 @@ class Player(object):
 
 class GLPlotWidget(QGLWidget):
     # default window size
-    width, height = 96, 64
+    width, height = 96, 96
     bunny_point = [30, 50]
     player = Player(20, 20)
     eggs = {v : [] for v in COLOURS.values()}
@@ -89,7 +89,7 @@ class GLPlotWidget(QGLWidget):
                 x = item[0]
                 y = item[1]
 
-                if x < 0 or x > 96 or y < 0 or y > 64:
+                if x < 0 or x > self.width or y < 0 or y > self.height:
                     items.remove(item)
                     continue
 
@@ -171,6 +171,12 @@ class GLPlotWidget(QGLWidget):
 
         gl.glPopMatrix() 
 
+
+    def move_player(self, direction):
+        if direction == DIRECTIONS['up']:
+            pass
+
+
     def paintGL(self):
         """Paint the scene.
         """
@@ -201,7 +207,7 @@ class GLPlotWidget(QGLWidget):
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
         # the window corner OpenGL coordinates are (-+1, -+1)
-        gl.glOrtho(0, 96, 0, 64, -1, 1)
+        gl.glOrtho(0, 96, 0, 96, -1, 1)
  
 if __name__ == '__main__':
     # import numpy for generating random data points
@@ -250,9 +256,9 @@ if __name__ == '__main__':
 
         def move_monsters(self):
             for monster in self.widget.monsters:
-                if 4 < monster.x < 90:
+                if 4 < monster.x < (self.widget.width - 4):
                     monster.x += randint(-1, 1)
-                if 2 < monster.y < 60:
+                if 2 < monster.y < (self.widget.height - 2):
                     monster.y += randint(-1, 1)
 
         def check(self):
