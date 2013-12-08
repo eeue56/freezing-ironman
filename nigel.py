@@ -78,18 +78,51 @@ class GLPlotWidget(QGLWidget):
 
         gl.glEnd()
 
+    def draw_cube(self, x, y, z):
+        gl.glBegin(gl.GL_QUADS)                    # Start Drawing The Pyramid
+
+        width = 0.95
+        height = 0.95
+        depth = 0.95
+
+        gl.glVertex3f(x + width, y + height, z)        # Top Right Of The Quad (Top)
+        gl.glVertex3f(x, y + height, z)        # Top Left Of The Quad (Top)
+        gl.glVertex3f(x, y + height, z + depth)        # Bottom Left Of The Quad (Top)
+        gl.glVertex3f(x + width, y + height, z + depth)        # Bottom Right Of The Quad (Top)
+
+        gl.glVertex3f(x + width, y, z + depth)        # Top Right Of The Quad (Bottom)
+        gl.glVertex3f(x, y, z + depth)        # Top Left Of The Quad (Bottom)
+        gl.glVertex3f(x, y, z)        # Bottom Left Of The Quad (Bottom)
+        gl.glVertex3f(x + width, y, z)        # Bottom Right Of The Quad (Bottom)
+
+        gl.glVertex3f(x + width, y + height, z + depth)        # Top Right Of The Quad (Front)
+        gl.glVertex3f(x, y + height, z + depth)        # Top Left Of The Quad (Front)
+        gl.glVertex3f(x, y, z + depth)        # Bottom Left Of The Quad (Front)
+        gl.glVertex3f(x + width, y, z + depth)        # Bottom Right Of The Quad (Front)
+
+        gl.glVertex3f(x + width, y, z)        # Bottom Left Of The Quad (Back)
+        gl.glVertex3f(x, y, z)        # Bottom Right Of The Quad (Back)
+        gl.glVertex3f(x, y + height, z)        # Top Right Of The Quad (Back)
+        gl.glVertex3f(x + width, y + height, z)        # Top Left Of The Quad (Back)
+
+        gl.glVertex3f(x, y + height, z + depth)        # Top Right Of The Quad (Left)
+        gl.glVertex3f(x, y + height, z)        # Top Left Of The Quad (Left)
+        gl.glVertex3f(x, y, z)        # Bottom Left Of The Quad (Left)
+        gl.glVertex3f(x, y, z + depth)        # Bottom Right Of The Quad (Left)
+
+        gl.glVertex3f(x + width, y + height, z)        # Top Right Of The Quad (Right)
+        gl.glVertex3f(x + width, y + height, z + depth)        # Top Left Of The Quad (Right)
+        gl.glVertex3f(x + width, y, z + depth)        # Bottom Left Of The Quad (Right)
+        gl.glVertex3f(x + width, y, z)        # Bottom Right Of The Quad (Right)
+        gl.glEnd()                # Done Drawing The Quad
+        
     def draw_player(self):
         gl.glBegin(gl.GL_TRIANGLES)
-
-        x = self.world.player.x
-        y = self.world.player.y
-        z = self.world.player.z
         
         x = 0
         y = 0
         z = 0 
         
-
         width = 3
         height = 3
 
@@ -122,6 +155,11 @@ class GLPlotWidget(QGLWidget):
 
         self.draw_skybox()
         self.draw_player()
+
+        for i in xrange(-10, 10):
+            for j in xrange(-10, 10):
+                self.draw_cube(i, -2, j)
+                
 
     def resizeGL(self, width, height):
         """Called upon window resizing: reinitialize the viewport.
