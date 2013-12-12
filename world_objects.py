@@ -18,7 +18,7 @@ class WorldObject(object):
         r, g, b = self.color
         gl.glColor3f(r, g, b)
 
-        for square in self.populated:
+        for square in self.populated_squares:
             x, y = square
             draw_square(x, y)
 
@@ -85,8 +85,8 @@ class Player(WorldObject):
         populate = lambda x, y: populated.append((x, y))
 
         if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + width):
-                for y in xrange(self.y, self.y + height):
+            for x in xrange(self.x, self.x + self.width):
+                for y in xrange(self.y, self.y + self.height):
                     populate(x, y)
             if self.facing == DIRECTIONS['up']:
                 populate(x - 3, y + 1)
@@ -100,8 +100,8 @@ class Player(WorldObject):
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
-            for x in xrange(self.x, self.x + height):
-                for y in xrange(self.y, self.y + width):
+            for x in xrange(self.x, self.x + self.height):
+                for y in xrange(self.y, self.y + self.width):
                     populate(x, y)
             if self.facing == DIRECTIONS['right']:
                 populate(x + 1, y - 1)
@@ -166,8 +166,8 @@ class Monster(WorldObject):
         populate = lambda x, y: populated.append((x, y))
 
         if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + width):
-                for y in xrange(self.y, self.y + height):
+            for x in xrange(self.x, self.x + self.width):
+                for y in xrange(self.y, self.y + self.height):
                     populate(x, y)
             if self.facing == DIRECTIONS['up']:
                 populate(x - 3, y + 1)
@@ -181,8 +181,8 @@ class Monster(WorldObject):
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
-            for x in xrange(self.x, self.x + height):
-                for y in xrange(self.y, self.y + width):
+            for x in xrange(self.x, self.x + self.height):
+                for y in xrange(self.y, self.y + self.width):
                     populate(x, y)
             if self.facing == DIRECTIONS['right']:
                 populate(x + 1, y - 1)
