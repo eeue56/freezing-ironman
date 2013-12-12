@@ -11,6 +11,7 @@ class WorldObject(object):
         self.y = y
         self.color = color
         self.can_take_damage = take_damage
+        self._square_cache = {}
 
     def draw(self):
         gl.glPushMatrix()
@@ -30,9 +31,14 @@ class WorldObject(object):
     def tick(self, world):
         pass
 
+    def populated_at(self, x, y):
+        return [(x, y)]
+        
     @property
     def populated_squares(self):
-        return [(self.x, self.y)]
+        if (self.x, self.y) not in self._square_cache:
+            self._square_cache[(self.x, self.y)] = self.populated_at(self.x, self.y)
+        return self._square_cache[(self.x, self.y)]
 
 
 class Player(WorldObject):
@@ -70,6 +76,8 @@ class Player(WorldObject):
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
                 self.take_damage(0.1, world)
+        except OutOfWorldException:
+            pass
         except:
             raise
 
@@ -79,14 +87,13 @@ class Player(WorldObject):
         if self.health <= 0:
             world.remove_object(self)
 
-    @property
-    def populated_squares(self):
+    def populated_at(self, xs, ys):
         populated = []
         populate = lambda x, y: populated.append((x, y))
 
         if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + self.width):
-                for y in xrange(self.y, self.y + self.height):
+            for x in xrange(xs, xs + self.width):
+                for y in xrange(ys, ys + self.height):
                     populate(x, y)
             if self.facing == DIRECTIONS['up']:
                 populate(x - 3, y + 1)
@@ -94,14 +101,14 @@ class Player(WorldObject):
                 populate(x - 2, y + 2)
                 populate(x - 1, y + 1)
             else:
-                y = self.y
+                y = ys
                 populate(x - 3, y - 1)
                 populate(x - 2, y - 1)
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
-            for x in xrange(self.x, self.x + self.height):
-                for y in xrange(self.y, self.y + self.width):
+            for x in xrange(xs, xs + self.height):
+                for y in xrange(ys, ys + self.width):
                     populate(x, y)
             if self.facing == DIRECTIONS['right']:
                 populate(x + 1, y - 1)
@@ -109,7 +116,7 @@ class Player(WorldObject):
                 populate(x + 1, y - 3)
                 populate(x + 2, y - 2)
             else:
-                x = self.x
+                x = xs
                 populate(x - 1, y - 1)
                 populate(x - 1, y - 2)
                 populate(x - 1, y - 3)
@@ -160,14 +167,13 @@ class Monster(WorldObject):
         if self.health <= 0:
             world.remove_object(self)
 
-    @property
-    def populated_squares(self):
+    def populated_at(self, xs, ys):
         populated = []
         populate = lambda x, y: populated.append((x, y))
 
         if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + self.width):
-                for y in xrange(self.y, self.y + self.height):
+            for x in xrange(xs, xs + self.width):
+                for y in xrange(ys, ys + self.height):
                     populate(x, y)
             if self.facing == DIRECTIONS['up']:
                 populate(x - 3, y + 1)
@@ -175,14 +181,14 @@ class Monster(WorldObject):
                 populate(x - 2, y + 2)
                 populate(x - 1, y + 1)
             else:
-                y = self.y
+                y = ys
                 populate(x - 3, y - 1)
                 populate(x - 2, y - 1)
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
-            for x in xrange(self.x, self.x + self.height):
-                for y in xrange(self.y, self.y + self.width):
+            for x in xrange(xs, xs + self.height):
+                for y in xrange(ys, ys + self.width):
                     populate(x, y)
             if self.facing == DIRECTIONS['right']:
                 populate(x + 1, y - 1)
@@ -190,7 +196,7 @@ class Monster(WorldObject):
                 populate(x + 1, y - 3)
                 populate(x + 2, y - 2)
             else:
-                x = self.x
+                x = xs
                 populate(x - 1, y - 1)
                 populate(x - 1, y - 2)
                 populate(x - 1, y - 3)
@@ -205,6 +211,7 @@ class Egg(WorldObject):
         self.speed = speed
         self.width = 1
         self.height = 1
+        self.health = 1
 
     def tick(self, world):
         try:
@@ -213,13 +220,21 @@ class Egg(WorldObject):
             print 'collided'
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
-            else:
-                world.remove_object(self)
+            world.remove_object(self)
+            self.health = 0
         except OutOfWorldException:
             world.remove_object(self)
+            self.health = 0
         except:
             raise
 
     def take_damage(self, damage, world):
         world.remove_object(self)
+
+    def populated_at(self, x, y):
+        return [(x, y)]
+
         
+    @property
+    def populated_squares(self):
+        return self.populated_at(self.x, self.y)

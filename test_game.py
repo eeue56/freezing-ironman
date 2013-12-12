@@ -97,7 +97,7 @@ if __name__ == '__main__':
             QtCore.QMetaObject.connectSlotsByName(self)
             
             self.paint_timer.start(30)
-            self.tick_timer.start(30)
+            self.tick_timer.start(50)
             self.button_timer.start(25)
 
             self.resize(600, 400)
