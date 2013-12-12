@@ -27,7 +27,7 @@ class World(object):
         return self.object_array[y][x] is not None
 
     def is_going_to_collide(self, old_x, old_y, new_x, new_y, object_):
-        if new_x > self.width or new_x < 0 or new_y > self.height or new_y < 0:
+        if new_x >= self.width or new_x < 0 or new_y >= self.height or new_y < 0:
             raise OutOfWorldException
 
         if old_x > new_x:
@@ -51,7 +51,6 @@ class World(object):
             object_)
 
     def _move(self, x, y, new_x, new_y):
-        print 'new x ', new_x, new_y
         self.object_array[new_y][new_x] = self.object_array[y][x]
         self.object_array[y][x] = None
 
@@ -122,7 +121,11 @@ class World(object):
             self.move_object(self.player, direction, distance)
 
     def remove_object(self, object_):
-        self.object_array[object_.y][object_.x] = None
+        try:
+            self.objects.remove(object_)
+            self.object_array[object_.y][object_.x] = None
+        except IndexError:
+            pass
 
     def draw(self):
         for object_ in self.objects:

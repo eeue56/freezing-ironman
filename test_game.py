@@ -74,6 +74,9 @@ if __name__ == '__main__':
 
             self.world = World(self.player)
 
+            self.world.add_object(Monster(70, 70, color=COLOURS['white']))
+            self.world.add_object(Egg(30, 30, color=COLOURS['white']))
+
             self.widget = GLPlotWidget(100, 100, self.world)
             self.color = COLOURS['white']
             self.keys = set()
@@ -115,7 +118,9 @@ if __name__ == '__main__':
 
             player_movement = -50
             face_movement = -50
+            egg_direction = -50
             self.world.player.speed = 0
+            egg = None
 
             for key in self.keys:  
 
@@ -134,17 +139,17 @@ if __name__ == '__main__':
                     
 
                 elif key == QtCore.Qt.Key_Up:
-                    self.world.add_object(Egg(x + 5, y + 10, COLOURS['white'], 'Up', 2))
                     player_movement += DIRECTIONS['up']
+                    egg = Egg(x + 5, y + 10, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Down:
-                    self.world.add_object(Egg(x + 5, y - 10, COLOURS['white'], 'Down', 2))
                     player_movement += DIRECTIONS['down']
+                    egg = Egg(x + 5, y - 10, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Right:
-                    self.world.add_object(Egg(x + 10, y + 5, COLOURS['white'], 'Right', 2))
                     player_movement += DIRECTIONS['right']
+                    egg = Egg(x + 10, y + 5, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Left:
-                    self.world.add_object(Egg(x - 10, y + 5, COLOURS['white'], 'Left', 2))
                     player_movement += DIRECTIONS['left']
+                    egg = Egg(x - 10, y + 5, COLOURS['white'])
 
 
                 elif key == QtCore.Qt.Key_Space:
@@ -159,6 +164,8 @@ if __name__ == '__main__':
                     self.world.player.color = COLOURS['black']
 
             if player_movement > -50:
+                egg.facing = player_movement + 50
+                self.world.add_object(egg)
                 self.world.player.facing = player_movement + 50
 
             if face_movement > -50:

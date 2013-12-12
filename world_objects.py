@@ -101,6 +101,7 @@ class Player(WorldObject):
             raise
 
     def take_damage(self, damage, world):
+        return
         self.health -= damage
 
         if self.health <= 0:
@@ -108,9 +109,10 @@ class Player(WorldObject):
 
 
 class Monster(WorldObject):
-    def __init__(self, x, y, health=3, color=COLOURS['grey']):
+    def __init__(self, x, y, speed=1, health=3, color=COLOURS['grey']):
         WorldObject.__init__(self, x, y, color, take_damage=True)
         self.health = health
+        self.speed = 0
         self.facing = DIRECTIONS['up']
 
     def new_color(self):
@@ -196,7 +198,8 @@ class Egg(WorldObject):
         self.speed = speed
 
     def draw(self):
-        gl.glColor3f(self.color.r, self.color.g, self.color.b)
+        r, g, b = self.color
+        gl.glColor3f(r, g, b)
 
         draw_square(self.x, self.y)
 
