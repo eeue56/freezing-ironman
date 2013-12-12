@@ -10,19 +10,9 @@ import OpenGL.GL as gl
 import OpenGL.arrays.vbo as glvbo
 
 from random import choice, randint
+from misc import *
+from world import World
 
-COLOURS = { 'black' : (0, 0, 0),
-            'other-grey' : (0.25, 0.25, 0.25),
-            'grey' : (0.4, 0.4, 0.4),
-            'red' :  (255, 0, 0),
-            'white' : (1, 1, 1)}
-
-DIRECTIONS = {
-        'up' : 1,
-        'down' : 2,
-        'left' : 3,
-        'right' : 4
-}
 
 def random_color():
     return tuple(y / 255 for y in (randint(0, 255), randint(0, 255), randint(0, 255)))
@@ -54,6 +44,8 @@ class Player(object):
 
         self.color = tuple(o)
 
+    def tick(self):
+        pass
 
 
 class GLPlotWidget(QGLWidget):
@@ -173,9 +165,7 @@ class GLPlotWidget(QGLWidget):
 
 
     def move_player(self, direction):
-        if direction == DIRECTIONS['up']:
-            pass
-
+        self.player.move(direction)
 
     def paintGL(self):
         """Paint the scene.
@@ -266,16 +256,18 @@ if __name__ == '__main__':
             x = self.widget.player.x
             y = self.widget.player.y
 
+            player_movement = -50
+
             for key in self.keys:  
 
                 if key == QtCore.Qt.Key_A:
-                    self.widget.player.x -= 1
+                    player_movement += DIRECTIONS['left'] 
                 elif key == QtCore.Qt.Key_D:
-                    self.widget.player.x += 1
+                    player_movement += DIRECTIONS['right']
                 elif key == QtCore.Qt.Key_W:
-                    self.widget.player.y += 1
+                    player_movement += DIRECTIONS['up']
                 elif key == QtCore.Qt.Key_S:
-                    self.widget.player.y -= 1
+                    player_movement += DIRECTIONS['down']
 
                 elif key == QtCore.Qt.Key_Up:
                     self.widget.add_egg(x + 2, y + 7, COLOURS['white'], 'Up', 2)
@@ -301,6 +293,9 @@ if __name__ == '__main__':
                     self.widget.player.color = COLOURS['other-grey']
                 elif key == QtCore.Qt.Key_4:
                     self.widget.player.color = COLOURS['black']
+
+            if player_movement > -50:
+                self.widget.world.move_player(player_movement + 50)
 
 
 
