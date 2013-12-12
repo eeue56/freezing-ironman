@@ -3,6 +3,7 @@ from __future__ import division
 import OpenGL.GL as gl
 
 from misc import *
+from global_exceptions import *
 
 class WorldObject(object):
     def __init__(self, x, y, color, take_damage=False):
@@ -26,6 +27,8 @@ class Player(WorldObject):
         WorldObject.__init__(self, x, y, color, take_damage=True)
         self.health = health
         self.facing = DIRECTIONS['up']
+        self.movement_facing = DIRECTIONS['up']
+        self.speed = 0
         self.width = 2
         self.height = 3
 
@@ -89,13 +92,13 @@ class Player(WorldObject):
 
     def tick(self, world):
         try:
-            world.move_object(self, self.facing)
+            world.move_object(self, self.movement_facing, self.speed)
         except CollisionException as e:
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
                 self.take_damage(0.1, world)
         except:
-            pass
+            raise
 
     def take_damage(self, damage, world):
         self.health -= damage
@@ -170,15 +173,16 @@ class Monster(WorldObject):
 
     def tick(self, world):
         try:
-            world.move_object(self, self.facing)
+            world.move_object(self, self.facing, self.speed)
         except CollisionException as e:
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
                 self.take_damage(0.1, world)
         except:
-            pass
+            raise
 
     def take_damage(self, damage, world):
+        return
         self.health -= damage
 
         if self.health <= 0:
@@ -186,9 +190,10 @@ class Monster(WorldObject):
 
 
 class Egg(WorldObject):
-    def __init__(self, x, y, color, facing=DIRECTIONS['up']):
+    def __init__(self, x, y, color, facing=DIRECTIONS['up'], speed=1):
         WorldObject.__init__(self, x, y, color, take_damage=False)
         self.facing = facing
+        self.speed = speed
 
     def draw(self):
         gl.glColor3f(self.color.r, self.color.g, self.color.b)
@@ -197,7 +202,7 @@ class Egg(WorldObject):
 
     def tick(self, world):
         try:
-            world.move_object(self, self.facing)
+            world.move_object(self, self.facing, self.speed)
         except CollisionException as e:
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
@@ -206,7 +211,7 @@ class Egg(WorldObject):
         except OutOfWorldException:
             world.remove_object(self)
         except:
-            pass
+            raise
 
     def take_damage(self, damage, world):
         world.remove_object(self)

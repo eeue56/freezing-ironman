@@ -114,30 +114,37 @@ if __name__ == '__main__':
             y = self.world.player.y
 
             player_movement = -50
+            face_movement = -50
+            self.world.player.speed = 0
 
             for key in self.keys:  
 
                 if key == QtCore.Qt.Key_A:
-                    player_movement += DIRECTIONS['left'] 
+                    self.world.player.speed = 1
+                    face_movement += DIRECTIONS['left']
                 elif key == QtCore.Qt.Key_D:
-                    player_movement += DIRECTIONS['right']
+                    self.world.player.speed = 1
+                    face_movement += DIRECTIONS['right']
                 elif key == QtCore.Qt.Key_W:
-                    player_movement += DIRECTIONS['up']
+                    self.world.player.speed = 1
+                    face_movement += DIRECTIONS['up']
                 elif key == QtCore.Qt.Key_S:
-                    player_movement += DIRECTIONS['down']
+                    self.world.player.speed = 1
+                    face_movement += DIRECTIONS['down']
+                    
 
                 elif key == QtCore.Qt.Key_Up:
-                    self.world.add_object(Egg(x + 2, y + 7, COLOURS['white'], 'Up', 2))
-                    self.world.player.facing = DIRECTIONS['up']
+                    self.world.add_object(Egg(x + 5, y + 10, COLOURS['white'], 'Up', 2))
+                    player_movement += DIRECTIONS['up']
                 elif key == QtCore.Qt.Key_Down:
-                    self.world.add_object(Egg(x + 2, y - 7, COLOURS['white'], 'Down', 2))
-                    self.world.player.facing = DIRECTIONS['down']
+                    self.world.add_object(Egg(x + 5, y - 10, COLOURS['white'], 'Down', 2))
+                    player_movement += DIRECTIONS['down']
                 elif key == QtCore.Qt.Key_Right:
-                    self.world.add_object(Egg(x + 7, y + 2, COLOURS['white'], 'Right', 2))
-                    self.world.player.facing = DIRECTIONS['right']
+                    self.world.add_object(Egg(x + 10, y + 5, COLOURS['white'], 'Right', 2))
+                    player_movement += DIRECTIONS['right']
                 elif key == QtCore.Qt.Key_Left:
-                    self.world.add_object(Egg(x - 7, y + 2, COLOURS['white'], 'Left', 2))
-                    self.world.player.facing = DIRECTIONS['left']
+                    self.world.add_object(Egg(x - 10, y + 5, COLOURS['white'], 'Left', 2))
+                    player_movement += DIRECTIONS['left']
 
 
                 elif key == QtCore.Qt.Key_Space:
@@ -152,7 +159,10 @@ if __name__ == '__main__':
                     self.world.player.color = COLOURS['black']
 
             if player_movement > -50:
-                self.world.move_player(player_movement + 50)
+                self.world.player.facing = player_movement + 50
+
+            if face_movement > -50:
+                self.world.player.movement_facing = face_movement + 50
 
 
 
