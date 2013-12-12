@@ -141,7 +141,10 @@ class World(object):
 
 
     def move_level(self):
-        self.move_player(DIRECTIONS['right'], distance=5)
+        if self.player.x > 50:
+            self.move_player(DIRECTIONS['left'], distance=5)
+        else:
+            self.move_player(DIRECTIONS['right'], distance=5)
         self.current_level += 1
         self._last_collide = None
 

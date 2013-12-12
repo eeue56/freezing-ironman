@@ -77,17 +77,22 @@ if __name__ == '__main__':
                     Wall(100, 100, facing=DIRECTIONS['down']),
                     Wall(100, 100, facing=DIRECTIONS['up']),
                     Wall(100, 100, facing=DIRECTIONS['right']),
-                    Monster(70, 70, color=COLOURS['white'])
+                    Monster(70, 70, color=COLOURS['white']),
+                    Monster(23, 25, color=COLOURS['grey']),
+                    Monster(53, 83, color=COLOURS['white']),
+                    Monster(10, 40, color=COLOURS['grey'])
                 ],
                 [
-                    Wall(100, 100, facing=DIRECTIONS['left'], gaps=range(30, 60)),
+                    Wall(100, 100, facing=DIRECTIONS['left']),
                     Wall(100, 100, facing=DIRECTIONS['down']),
                     Wall(100, 100, facing=DIRECTIONS['up']),
-                    Wall(100, 100, facing=DIRECTIONS['right']),
-                    Monster(23, 25, color=COLOURS['grey'])
+                    Wall(100, 100, facing=DIRECTIONS['right'], gaps=range(60, 90)),
+                    Monster(23, 25, color=COLOURS['grey']),
+                    Monster(53, 83, color=COLOURS['white']),
+                    Monster(10, 40, color=COLOURS['grey'])
                 ],
                 [
-                    Wall(100, 100, facing=DIRECTIONS['up'], gaps=range(30, 60)),
+                    Wall(100, 100, facing=DIRECTIONS['up']),
                     Wall(100, 100, facing=DIRECTIONS['down']),
                     Wall(100, 100, facing=DIRECTIONS['left']),
                     Wall(100, 100, facing=DIRECTIONS['right'])

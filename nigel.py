@@ -187,12 +187,12 @@ class GLPlotWidget(QGLWidget):
         gl.glClearColor(0, 0, 0, 0)
         gl.glViewport(0, 0, self.width, self.height)
         gl.glEnable(gl.GL_DEPTH_TEST)
-        gl.glEnable(gl.GL_FOG)
+        """gl.glEnable(gl.GL_FOG)
         gl.glFogf(gl.GL_FOG_START, 0.5)
         gl.glFogf(gl.GL_FOG_END, 0.7)
         gl.glFogf(gl.GL_FOG_DENSITY, 0.1)
         gl.glFogf(gl.GL_FOG_COLOR, 0, 0, 0, -0.5)
-        gl.glDisable(gl.GL_FOG)
+        gl.glDisable(gl.GL_FOG)"""
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
 
@@ -210,7 +210,7 @@ class GLPlotWidget(QGLWidget):
         player_z = int(self.world.player.z)
 
 
-        render_distances = [10, 6, 15]
+        render_distances = [100, 50, 100]
         
         for cube in self.world.objects_by_selection(
             [player_x - render_distances[0], player_x + render_distances[0]],
@@ -235,7 +235,7 @@ class GLPlotWidget(QGLWidget):
         gl.glOrtho(-deep_size, deep_size, -deep_size, deep_size, -deep_size, deep_size)
 
         gl.glLoadIdentity()
-        glu.gluPerspective(90, width / height, 0.1, 50)
+        glu.gluPerspective(70, width / height, 0.1, 50)
 
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
@@ -349,12 +349,21 @@ if __name__ == '__main__':
             player = Player(0, 0, 0)
             self.world = World(player)
 
-            numbers = range(-20, 20)
 
             def generate_world():
-                for z in numbers:
-                    self.world.add_objects([Cube(x, -3, z) for x in numbers])
-                    self.world.add_objects([Cube(x, -2, z) for x in numbers if x == z or x < z])
+                numbers = range(-6, 6)
+
+                for i in [-6, -5, -4, -3, -2]:
+                    for n in numbers:
+                        for m in numbers:
+                            self.world.add_objects([Cube(n, i, m)])
+
+                    if (len(numbers) / 2) % 2:
+                        numbers = range(-(8+i), (8+i))
+                    else:
+                        numbers = range(-(6+i),(6+i))
+
+
 
             generate_world()
             
