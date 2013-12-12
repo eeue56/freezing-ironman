@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
             self.world = World(self.player)
 
-            self.widget = GLPlotWidget()
+            self.widget = GLPlotWidget(100, 100, self.world)
             self.color = COLOURS['white']
             self.keys = set()
 
