@@ -13,13 +13,26 @@ class WorldObject(object):
         self.can_take_damage = take_damage
 
     def draw(self):
-        pass
+        gl.glPushMatrix()
+
+        r, g, b = self.color
+        gl.glColor3f(r, g, b)
+
+        for square in self.populated:
+            x, y = square
+            draw_square(x, y)
+
+        gl.glPopMatrix() 
 
     def take_damage(self, damage, world):
         pass
 
     def tick(self, world):
         pass
+
+    @property
+    def populated_squares(self):
+        return [(self.x, self.y)]
 
 
 class Player(WorldObject):
@@ -29,8 +42,8 @@ class Player(WorldObject):
         self.facing = DIRECTIONS['up']
         self.movement_facing = DIRECTIONS['up']
         self.speed = 0
-        self.width = 2
-        self.height = 3
+        self.width = 5
+        self.height = 2
 
     def new_color(self):
         o = []
@@ -49,46 +62,6 @@ class Player(WorldObject):
             o.append(i / 255)
 
         self.color = tuple(o)
-
-    def draw(self):
-        gl.glPushMatrix()
-
-        r, g, b = self.color
-        gl.glColor3f(r, g, b)
-
-        if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + 5):
-                for y in xrange(self.y, self.y + 2):
-                    draw_square(x, y)
-            if self.facing == DIRECTIONS['up']:
-                draw_square(x - 3, y + 1)
-                draw_square(x - 2, y + 1)
-                draw_square(x - 2, y + 2)
-                draw_square(x - 1, y + 1)
-            else:
-                y = self.y
-                draw_square(x - 3, y - 1)
-                draw_square(x - 2, y - 1)
-                draw_square(x - 2, y - 2)
-                draw_square(x - 1, y - 1)
-        else:
-            for x in xrange(self.x, self.x + 2):
-                for y in xrange(self.y, self.y + 5):
-                    draw_square(x, y)
-            if self.facing == DIRECTIONS['right']:
-                draw_square(x + 1, y - 1)
-                draw_square(x + 1, y - 2)
-                draw_square(x + 1, y - 3)
-                draw_square(x + 2, y - 2)
-            else:
-                x = self.x
-                draw_square(x - 1, y - 1)
-                draw_square(x - 1, y - 2)
-                draw_square(x - 1, y - 3)
-                draw_square(x - 2, y - 2)
-       
-
-        gl.glPopMatrix() 
 
     def tick(self, world):
         try:
@@ -106,6 +79,43 @@ class Player(WorldObject):
         if self.health <= 0:
             world.remove_object(self)
 
+    @property
+    def populated_squares(self):
+        populated = []
+        populate = lambda x, y: populated.append((x, y))
+
+        if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
+            for x in xrange(self.x, self.x + width):
+                for y in xrange(self.y, self.y + height):
+                    populate(x, y)
+            if self.facing == DIRECTIONS['up']:
+                populate(x - 3, y + 1)
+                populate(x - 2, y + 1)
+                populate(x - 2, y + 2)
+                populate(x - 1, y + 1)
+            else:
+                y = self.y
+                populate(x - 3, y - 1)
+                populate(x - 2, y - 1)
+                populate(x - 2, y - 2)
+                populate(x - 1, y - 1)
+        else:
+            for x in xrange(self.x, self.x + height):
+                for y in xrange(self.y, self.y + width):
+                    populate(x, y)
+            if self.facing == DIRECTIONS['right']:
+                populate(x + 1, y - 1)
+                populate(x + 1, y - 2)
+                populate(x + 1, y - 3)
+                populate(x + 2, y - 2)
+            else:
+                x = self.x
+                populate(x - 1, y - 1)
+                populate(x - 1, y - 2)
+                populate(x - 1, y - 3)
+                populate(x - 2, y - 2)
+        return populated
+
 
 class Monster(WorldObject):
     def __init__(self, x, y, speed=1, health=3, color=COLOURS['grey']):
@@ -113,6 +123,8 @@ class Monster(WorldObject):
         self.health = health
         self.speed = 0
         self.facing = DIRECTIONS['up']
+        self.width = 5
+        self.height = 2
 
     def new_color(self):
         o = []
@@ -132,46 +144,6 @@ class Monster(WorldObject):
 
         self.color = tuple(o)
 
-    def draw(self):
-        gl.glPushMatrix()
-
-        r, g, b = self.color
-        gl.glColor3f(r, g, b)
-
-        if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
-            for x in xrange(self.x, self.x + 5):
-                for y in xrange(self.y, self.y + 2):
-                    draw_square(x, y)
-            if self.facing == DIRECTIONS['up']:
-                draw_square(x - 3, y + 1)
-                draw_square(x - 2, y + 1)
-                draw_square(x - 2, y + 2)
-                draw_square(x - 1, y + 1)
-            else:
-                y = self.y
-                draw_square(x - 3, y - 1)
-                draw_square(x - 2, y - 1)
-                draw_square(x - 2, y - 2)
-                draw_square(x - 1, y - 1)
-        else:
-            for x in xrange(self.x, self.x + 2):
-                for y in xrange(self.y, self.y + 5):
-                    draw_square(x, y)
-            if self.facing == DIRECTIONS['right']:
-                draw_square(x + 1, y - 1)
-                draw_square(x + 1, y - 2)
-                draw_square(x + 1, y - 3)
-                draw_square(x + 2, y - 2)
-            else:
-                x = self.x
-                draw_square(x - 1, y - 1)
-                draw_square(x - 1, y - 2)
-                draw_square(x - 1, y - 3)
-                draw_square(x - 2, y - 2)
-       
-
-        gl.glPopMatrix() 
-
     def tick(self, world):
         try:
             world.move_object(self, self.facing, self.speed)
@@ -188,18 +160,51 @@ class Monster(WorldObject):
         if self.health <= 0:
             world.remove_object(self)
 
+    @property
+    def populated_squares(self):
+        populated = []
+        populate = lambda x, y: populated.append((x, y))
+
+        if self.facing in (DIRECTIONS['down'], DIRECTIONS['up']):
+            for x in xrange(self.x, self.x + width):
+                for y in xrange(self.y, self.y + height):
+                    populate(x, y)
+            if self.facing == DIRECTIONS['up']:
+                populate(x - 3, y + 1)
+                populate(x - 2, y + 1)
+                populate(x - 2, y + 2)
+                populate(x - 1, y + 1)
+            else:
+                y = self.y
+                populate(x - 3, y - 1)
+                populate(x - 2, y - 1)
+                populate(x - 2, y - 2)
+                populate(x - 1, y - 1)
+        else:
+            for x in xrange(self.x, self.x + height):
+                for y in xrange(self.y, self.y + width):
+                    populate(x, y)
+            if self.facing == DIRECTIONS['right']:
+                populate(x + 1, y - 1)
+                populate(x + 1, y - 2)
+                populate(x + 1, y - 3)
+                populate(x + 2, y - 2)
+            else:
+                x = self.x
+                populate(x - 1, y - 1)
+                populate(x - 1, y - 2)
+                populate(x - 1, y - 3)
+                populate(x - 2, y - 2)
+        return populated
+
 
 class Egg(WorldObject):
     def __init__(self, x, y, color, facing=DIRECTIONS['up'], speed=1):
         WorldObject.__init__(self, x, y, color, take_damage=False)
         self.facing = facing
         self.speed = speed
-
-    def draw(self):
-        r, g, b = self.color
-        gl.glColor3f(r, g, b)
-
-        draw_square(self.x, self.y)
+        self.width = 1
+        self.height = 1
 
     def tick(self, world):
         try:
