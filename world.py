@@ -19,11 +19,13 @@ class World(object):
         self.objects.extend(objects)
 
         for object_ in objects:
-            self.object_array[object_.y][object_.x] = object_
+            for (x, y) in object_.populated:
+                self.object_array[y][x] = object_
 
     def add_object(self, object_):
         self.objects.append(object_)
-        self.object_array[object_.y][object_.x] = object_
+        for (x, y) in object_.populated:
+            self.object_array[y][x] = object_
 
     def is_object_there(self, x, y):
         return self.object_array[y][x] is not None
@@ -53,14 +55,18 @@ class World(object):
             object_.x + x, object_.y + y,
             object_)
 
-    def _move(self, x, y, new_x, new_y):
-        self.object_array[new_y][new_x] = self.object_array[y][x]
-        self.object_array[y][x] = None
+    def _move(self, old, new, object_):
+
+        for (x, y) in old:
+            self.object_array[y][x] = None
+        for (new_y, new_x) in new:
+            self.object_array[new_y][new_x] = object_
 
     def _move_object(self, object_, x=0, y=0):
+        old_populated = object_.populated
         object_.x += x
         object_.y += y
-        self._move(object_.x - x, object_.y - y, object_.x, object_.y)
+        self._move(old_populated, object_.populated, object_)
 
     def _dirty_move(self, object_, direction, distance):
         if direction == DIRECTIONS['up']:
