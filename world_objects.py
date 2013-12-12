@@ -101,7 +101,6 @@ class Player(WorldObject):
             raise
 
     def take_damage(self, damage, world):
-        return
         self.health -= damage
 
         if self.health <= 0:
@@ -184,7 +183,6 @@ class Monster(WorldObject):
             raise
 
     def take_damage(self, damage, world):
-        return
         self.health -= damage
 
         if self.health <= 0:
@@ -207,6 +205,7 @@ class Egg(WorldObject):
         try:
             world.move_object(self, self.facing, self.speed)
         except CollisionException as e:
+            print 'collided'
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
             else:
