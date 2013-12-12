@@ -2,12 +2,13 @@ from __future__ import division
 
 from misc import *
 from global_exceptions import *
+from collections import defaultdict
 from copy import deepcopy as copy
 
 
 class World(object):
 
-    def __init__(self, player, height=100, width=100):
+    def __init__(self, player, levels=None, height=100, width=100):
         self.player = player
         self.height = height
         self.width = width
@@ -18,6 +19,12 @@ class World(object):
 
         self.objects = []
         self.object_array = [[None for x in xrange(width)] for y in xrange(height)]
+
+        if levels is None:
+            levels = defaultdict(lambda:[])
+        self.levels = levels
+        self.current_level = 0
+        self.generate_level()
 
     def add_objects(self, objects):
         for object_ in objects:
@@ -132,6 +139,23 @@ class World(object):
 
         self._removing = False
 
+
+    def move_level(self):
+        self.move_player(DIRECTIONS['right'], distance=5)
+        self.current_level += 1
+        self._last_collide = None
+
+        self.objects = []
+        self.object_array = [[None for x in xrange(self.width)] for y in xrange(self.height)]
+        self.generate_level()
+
+
+    def generate_level(self):
+        level = self.levels[self.current_level]
+
+        self.add_objects(level)
+
+
     def draw(self):
         for object_ in self.objects:
             object_.draw()
@@ -142,4 +166,7 @@ class World(object):
         for object_ in self.objects:
             object_.tick(self)
 
-        self.player.tick(self)
+        try:
+            self.player.tick(self)
+        except OutOfWorldException:
+            self.move_level()

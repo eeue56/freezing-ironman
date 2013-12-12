@@ -6,11 +6,12 @@ from misc import *
 from global_exceptions import *
 
 class WorldObject(object):
-    def __init__(self, x, y, color, take_damage=False):
+    def __init__(self, x, y, color, facing=DIRECTIONS['up'], take_damage=False, moveable=True):
         self.x = x
         self.y = y
         self.color = color
         self.can_take_damage = take_damage
+        self.moveable = moveable
         self._square_cache = {}
 
     def draw(self):
@@ -36,9 +37,9 @@ class WorldObject(object):
         
     @property
     def populated_squares(self):
-        if (self.x, self.y) not in self._square_cache:
-            self._square_cache[(self.x, self.y)] = self.populated_at(self.x, self.y)
-        return self._square_cache[(self.x, self.y)]
+        if (self.x, self.y, self.facing) not in self._square_cache:
+            self._square_cache[(self.x, self.y, self.facing)] = self.populated_at(self.x, self.y)
+        return self._square_cache[(self.x, self.y, self.facing)]
 
 
 class Player(WorldObject):
@@ -74,10 +75,10 @@ class Player(WorldObject):
             world.move_object(self, self.movement_facing, self.speed)
         except CollisionException as e:
             if e.other.can_take_damage:
-                e.other.take_damage(1, world)
+                e.other.take_damage(0.5, world)
                 self.take_damage(0.1, world)
         except OutOfWorldException:
-            pass
+            raise
         except:
             raise
 
@@ -234,7 +235,50 @@ class Egg(WorldObject):
     def populated_at(self, x, y):
         return [(x, y)]
 
-        
-    @property
-    def populated_squares(self):
-        return self.populated_at(self.x, self.y)
+class Wall(WorldObject):
+    def __init__(self, x, y, width=2, gaps=None, color=COLOURS['grey'], facing=DIRECTIONS['up'], speed=1):
+        WorldObject.__init__(self, x, y, color, take_damage=False, moveable=False)
+
+        if gaps is None:
+            gaps = []
+
+        self.gaps = gaps
+        self.facing = facing
+        self.speed = speed
+        self.width = width
+        self.height = 1
+        self.health = 1
+
+    def tick(self, world):
+        pass
+
+    def take_damage(self, damage, world):
+        pass
+
+    def populated_at(self, *args):
+        populated = []
+        populate = lambda x, y: populated.append((x, y))
+        x, y = self.x, self.y
+
+        if self.facing == DIRECTIONS['down']:
+            for i in xrange(x):
+                if i not in self.gaps:
+                    for w in xrange(self.width):
+                        populate(i, w)
+        elif self.facing == DIRECTIONS['up']:
+            for i in xrange(x):
+                if i not in self.gaps:
+                    for w in xrange(y - self.width, y):
+                        populate(i, w)
+        elif self.facing == DIRECTIONS['left']:
+            for j in xrange(y):
+                if j not in self.gaps:
+                    for w in xrange(self.width):
+                        populate(0, j)
+        elif self.facing == DIRECTIONS['right']:
+            for j in xrange(y):
+                if j not in self.gaps:
+                    for w in xrange(x - self.width, x):
+                        populate(w, j)
+                
+        return populated

@@ -21,5 +21,5 @@ DIRECTIONS = {
 def random_color():
     return tuple(y / 255 for y in (randint(0, 255), randint(0, 255), randint(0, 255)))
 
-def draw_square(x, y, size=1):
-    gl.glRectf(x, y, x + size, y + size)
+def draw_square(x, y, x_size=1, y_size=1):
+    gl.glRectf(x, y, x + x_size, y + y_size)

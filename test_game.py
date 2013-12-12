@@ -71,11 +71,30 @@ if __name__ == '__main__':
             # initialize the GL widget
 
             self.player = Player(50, 50)
+            levels = [
+                [
+                    Wall(100, 100, facing=DIRECTIONS['left'], gaps=range(30, 60)),
+                    Wall(100, 100, facing=DIRECTIONS['down']),
+                    Wall(100, 100, facing=DIRECTIONS['up']),
+                    Wall(100, 100, facing=DIRECTIONS['right']),
+                    Monster(70, 70, color=COLOURS['white'])
+                ],
+                [
+                    Wall(100, 100, facing=DIRECTIONS['left'], gaps=range(30, 60)),
+                    Wall(100, 100, facing=DIRECTIONS['down']),
+                    Wall(100, 100, facing=DIRECTIONS['up']),
+                    Wall(100, 100, facing=DIRECTIONS['right']),
+                    Monster(23, 25, color=COLOURS['grey'])
+                ],
+                [
+                    Wall(100, 100, facing=DIRECTIONS['up'], gaps=range(30, 60)),
+                    Wall(100, 100, facing=DIRECTIONS['down']),
+                    Wall(100, 100, facing=DIRECTIONS['left']),
+                    Wall(100, 100, facing=DIRECTIONS['right'])
+                ]
+            ]
 
-            self.world = World(self.player)
-
-            self.world.add_object(Monster(70, 70, color=COLOURS['white']))
-            self.world.add_object(Egg(30, 30, color=COLOURS['white']))
+            self.world = World(self.player, levels=levels)
 
             self.widget = GLPlotWidget(100, 100, self.world)
             self.color = COLOURS['white']
@@ -97,7 +116,7 @@ if __name__ == '__main__':
             QtCore.QMetaObject.connectSlotsByName(self)
             
             self.paint_timer.start(30)
-            self.tick_timer.start(50)
+            self.tick_timer.start(25)
             self.button_timer.start(25)
 
             self.resize(600, 400)
