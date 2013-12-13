@@ -14,9 +14,9 @@ COLOURS = { 'black' : (0, 0, 0),
 DIRECTIONS = {
         'still' : 0,
         'up' : 1,
-        'down' : 2,
-        'left' : 30,
-        'right' : 40
+        'down' : -1,
+        'right' : 20,
+        'left' : -20
 }
 
 

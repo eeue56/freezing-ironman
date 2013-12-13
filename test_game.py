@@ -143,9 +143,9 @@ if __name__ == '__main__':
             x = self.world.player.x
             y = self.world.player.y
 
-            player_movement = -50
-            face_movement = -50
-            egg_direction = -50
+            player_movement = DIRECTIONS['still']
+            face_movement = DIRECTIONS['still']
+            egg_direction = DIRECTIONS['still']
             egg = None
 
             for key in self.keys:  
@@ -185,17 +185,12 @@ if __name__ == '__main__':
                 elif key == QtCore.Qt.Key_4:
                     self.world.player.color = COLOURS['black']
 
-            if player_movement > -50:
-                egg.facing = player_movement + 50
+            if player_movement != DIRECTIONS['still']:
+                egg.facing = player_movement
                 self.world.add_object(egg)
-                self.world.player.facing = player_movement + 50
+                self.world.player.facing = player_movement
 
-            if face_movement > -50:
-                self.world.player.movement_facing = face_movement + 50
-            else:
-                self.world.player.movement_facing = DIRECTIONS['still']
-
-
+            self.world.player.movement_facing = face_movement
 
  
     # create the QT App and window

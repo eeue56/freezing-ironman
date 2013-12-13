@@ -294,7 +294,7 @@ class Wall(WorldObject):
             for j in xrange(y):
                 if j not in self.gaps:
                     for w in xrange(self.width):
-                        populate(0, j)
+                        populate(w, j)
         elif self.facing == DIRECTIONS['right']:
             for j in xrange(y):
                 if j not in self.gaps:

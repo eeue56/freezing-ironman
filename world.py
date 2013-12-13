@@ -73,53 +73,25 @@ class World(object):
         if distance <= 0 or direction == DIRECTIONS['still']:
             return
 
-        if direction == DIRECTIONS['up']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, y=1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, y=1)
 
-        elif direction == DIRECTIONS['down']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, y=-1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, y=-1)
+        movements = {
+            DIRECTIONS['up'] : (0, 1),
+            DIRECTIONS['down'] : (0, -1),
+            DIRECTIONS['left'] : (-1, 0),
+            DIRECTIONS['right'] : (1, 0),
+            DIRECTIONS['up'] + DIRECTIONS['left'] : (-1, 1),
+            DIRECTIONS['up'] + DIRECTIONS['right'] : (1, 1),
+            DIRECTIONS['down'] + DIRECTIONS['left'] : (-1, -1),
+            DIRECTIONS['down'] + DIRECTIONS['right'] : (1, -1)
+        }
 
-        elif direction == DIRECTIONS['left']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=-1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=-1)
-
-        elif direction == DIRECTIONS['right']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=1)
-
-        elif direction == DIRECTIONS['down'] + DIRECTIONS['right']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=1, y=-1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=1, y=-1)
-
-        elif direction == DIRECTIONS['up'] + DIRECTIONS['right']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=1, y=1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=1, y=1)
-
-        elif direction == DIRECTIONS['down'] + DIRECTIONS['left']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=-1, y=-1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=-1, y=-1)
-
-        elif direction == DIRECTIONS['up'] + DIRECTIONS['left']:
-            for _ in [1 for _ in xrange(distance)]:
-                if self.is_object_going_to_collide(object_, x=-1, y=1):
-                    raise CollisionException(self._last_collide)
-                self._move_object(object_, x=-1, y=1)
+        
+        x, y = movements[direction]
+            
+        for _ in [1 for _ in xrange(distance)]:
+            if self.is_object_going_to_collide(object_, x=x, y=y):
+                raise CollisionException(self._last_collide)
+            self._move_object(object_, x=x, y=y)
 
     def move(self, x, y, direction, distance=1):
         object_ = self.object_array[y][x]
