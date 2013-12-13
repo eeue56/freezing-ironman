@@ -14,6 +14,7 @@ class WorldObject(object):
         self.moveable = moveable
         self._square_cache = {}
         self._section_cache = {}
+        self._rotated = False
 
     def draw(self):
 
@@ -24,7 +25,9 @@ class WorldObject(object):
 
         r, g, b = self.color
         gl.glColor3f(r, g, b)
-
+        if self._rotated:
+            gl.glTranslatef(self.x, self.y, 0)
+            gl.glRotatef(45, 0, 0, 1)
         for section in self._section_cache[(self.x, self.y, self.facing)]:
             (x, y, width, height) = section
             draw_square(x, y, width, height)
@@ -209,6 +212,7 @@ class Monster(WorldObject):
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
+            self._rotated = True
             for x in xrange(xs, xs + self.height):
                 for y in xrange(ys, ys + self.width):
                     populate(x, y)
@@ -300,5 +304,5 @@ class Wall(WorldObject):
                 if j not in self.gaps:
                     for w in xrange(x - self.width, x):
                         populate(w, j)
-                
+
         return populated
