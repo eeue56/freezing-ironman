@@ -102,6 +102,9 @@ if __name__ == '__main__':
                 ]
             ]
 
+            levels[0].extend([Monster(randint(0, world_width - 1), 
+                randint(0, world_height - 1)) for x in xrange(30)])
+
             self.world = World(self.player, levels=levels, width=world_width, height=world_height)
 
             self.widget = GLPlotWidget(100, 100, self.world)

@@ -5,18 +5,32 @@ import OpenGL.GL as gl
 from random import choice, randint
 from collections import OrderedDict
 
-COLOURS = { 'black' : (0, 0, 0),
-            'other-grey' : (0.25, 0.25, 0.25),
-            'grey' : (0.4, 0.4, 0.4),
-            'red' :  (255, 0, 0),
-            'white' : (1, 1, 1)}
+COLOURS = { 
+    'black' : (0, 0, 0),
+    'other-grey' : (0.25, 0.25, 0.25),
+    'grey' : (0.4, 0.4, 0.4),
+    'red' :  (255, 0, 0),
+    'white' : (1, 1, 1)
+}
 
 DIRECTIONS = {
-        'still' : 0,
-        'up' : 1,
-        'down' : -1,
-        'right' : 20,
-        'left' : -20
+    'still' : 0,
+    'up' : 1,
+    'down' : -1,
+    'right' : 20,
+    'left' : -20
+}
+
+MOVEMENTS = {
+    DIRECTIONS['still'] : (0, 0),
+    DIRECTIONS['up'] : (0, 1),
+    DIRECTIONS['down'] : (0, -1),
+    DIRECTIONS['left'] : (-1, 0),
+    DIRECTIONS['right'] : (1, 0),
+    DIRECTIONS['up'] + DIRECTIONS['left'] : (-1, 1),
+    DIRECTIONS['up'] + DIRECTIONS['right'] : (1, 1),
+    DIRECTIONS['down'] + DIRECTIONS['left'] : (-1, -1),
+    DIRECTIONS['down'] + DIRECTIONS['right'] : (1, -1)
 }
 
 

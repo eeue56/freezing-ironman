@@ -211,7 +211,7 @@ class Monster(WorldObject):
 
     def tick(self, world):
         if self.chasing is None or self.chasing not in world.objects:
-            self.chasing = choice(obj for obj in world.objects)
+            self.chasing = choice(world.objects)
 
         new_face = world.find_path(self, self.chasing)
         self.facing = new_face

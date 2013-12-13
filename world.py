@@ -28,13 +28,14 @@ class World(object):
 
     def add_objects(self, objects):
         for object_ in objects:
-            for (x, y) in object_.populated_squares:
-                self.object_array[y][x] = object_
-            self.objects.append(object_)
+            self.add_object(object_)
 
     def add_object(self, object_):
         for (x, y) in object_.populated_squares:
-            self.object_array[y][x] = object_
+            try:
+                self.object_array[y][x] = object_
+            except IndexError:
+                raise OutOfWorldException
         self.objects.append(object_)
 
     def is_object_there(self, x, y):
@@ -52,11 +53,9 @@ class World(object):
 
     def is_object_going_to_collide(self, object_, x=0, y=0):
         projected_points = object_.populated_at(object_.x + x, object_.y + y)
-
         return self.is_going_to_collide(object_, projected_points)
 
     def _move(self, old, new, object_):
-
         for (x, y) in old:
             self.object_array[y][x] = None
         for (new_x, new_y) in new:
@@ -73,22 +72,9 @@ class World(object):
         if distance <= 0 or direction == DIRECTIONS['still']:
             return
 
-
-        movements = {
-            DIRECTIONS['up'] : (0, 1),
-            DIRECTIONS['down'] : (0, -1),
-            DIRECTIONS['left'] : (-1, 0),
-            DIRECTIONS['right'] : (1, 0),
-            DIRECTIONS['up'] + DIRECTIONS['left'] : (-1, 1),
-            DIRECTIONS['up'] + DIRECTIONS['right'] : (1, 1),
-            DIRECTIONS['down'] + DIRECTIONS['left'] : (-1, -1),
-            DIRECTIONS['down'] + DIRECTIONS['right'] : (1, -1)
-        }
-
-
-        x, y = movements[direction]
+        x, y = MOVEMENTS[direction]
             
-        for _ in [1 for _ in xrange(distance)]:
+        for _ in xrange(distance):
             if self.is_object_going_to_collide(object_, x=x, y=y):
                 raise CollisionException(self._last_collide)
             self._move_object(object_, x=x, y=y)
@@ -184,12 +170,9 @@ class World(object):
         self.object_array = [[None for x in xrange(self.width)] for y in xrange(self.height)]
         self.generate_level()
 
-
     def generate_level(self):
         level = self.levels[self.current_level]
-
         self.add_objects(level)
-
 
     def draw(self):
         for object_ in self.objects:
