@@ -4,6 +4,7 @@ import OpenGL.GL as gl
 
 from misc import *
 from global_exceptions import *
+from random import choice
 
 class WorldObject(object):
     """ World object class - super class for anything contained 
@@ -188,6 +189,7 @@ class Monster(WorldObject):
         self.facing = DIRECTIONS['up']
         self.width = 5
         self.height = 2
+        self.chasing = None
 
     def new_color(self):
         o = []
@@ -208,7 +210,10 @@ class Monster(WorldObject):
         self.color = tuple(o)
 
     def tick(self, world):
-        new_face = world.find_path(self, world.player)
+        if self.chasing is None or self.chasing not in world.objects:
+            self.chasing = choice(obj for obj in world.objects)
+
+        new_face = world.find_path(self, self.chasing)
         self.facing = new_face
         try:
             world.move_object(self, self.facing, self.speed)
