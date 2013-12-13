@@ -85,7 +85,7 @@ class World(object):
             DIRECTIONS['down'] + DIRECTIONS['right'] : (1, -1)
         }
 
-        
+
         x, y = movements[direction]
             
         for _ in [1 for _ in xrange(distance)]:
@@ -102,6 +102,34 @@ class World(object):
 
     def move_player(self, direction, distance=1):
         self.move_object(self.player, direction, distance)
+
+    def next_free_space(self, x, y, directions=None):
+        i = 0
+        j = 0
+
+        visited = []
+
+        while True:
+            for n in range(x - i, x + i):
+                if n < 0:
+                    continue
+                if n > self.width: 
+                    break
+
+                for m in range(y - j, y + j):
+                    if m < 0:
+                        continue
+                    if m > self.height:
+                        break
+
+                    if (n, m) not in visited:
+                        if self.object_array[m][n] is None:
+                            return (n, m)
+                        else:
+                            visited.append((n, m))
+            i += 1
+            j += 1
+
 
     def find_path_to_point(self, object_, x, y):
         my_x, my_y = object_.x, object_.y

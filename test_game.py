@@ -162,16 +162,12 @@ if __name__ == '__main__':
 
                 elif key == QtCore.Qt.Key_Up:
                     player_movement += DIRECTIONS['up']
-                    egg = Egg(x + 5, y + 10, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Down:
                     player_movement += DIRECTIONS['down']
-                    egg = Egg(x + 5, y - 10, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Right:
                     player_movement += DIRECTIONS['right']
-                    egg = Egg(x + 10, y + 5, COLOURS['white'])
                 elif key == QtCore.Qt.Key_Left:
                     player_movement += DIRECTIONS['left']
-                    egg = Egg(x - 10, y + 5, COLOURS['white'])
 
 
                 elif key == QtCore.Qt.Key_Space:
@@ -186,9 +182,8 @@ if __name__ == '__main__':
                     self.world.player.color = COLOURS['black']
 
             if player_movement != DIRECTIONS['still']:
-                egg.facing = player_movement
-                self.world.add_object(egg)
                 self.world.player.facing = player_movement
+                self.world.player.spawn_egg(self.world)
 
             self.world.player.movement_facing = face_movement
 

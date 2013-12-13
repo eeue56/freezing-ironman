@@ -26,7 +26,6 @@ class WorldObject(object):
         r, g, b = self.color
         gl.glColor3f(r, g, b)
         if self._rotated:
-            gl.glTranslatef(self.x, self.y, 0)
             gl.glRotatef(45, 0, 0, 1)
         for section in self._section_cache[(self.x, self.y, self.facing)]:
             (x, y, width, height) = section
@@ -103,6 +102,24 @@ class Player(WorldObject):
             raise
         except:
             raise
+
+    def spawn_egg(self, world):
+
+        positions = {
+            DIRECTIONS['up'] : (2, 5),
+            DIRECTIONS['down'] : (2, -3),
+            DIRECTIONS['left'] : (-4, 2),
+            DIRECTIONS['right'] : (4, 2),
+            DIRECTIONS['up'] + DIRECTIONS['left'] : (-1, 1),
+            DIRECTIONS['up'] + DIRECTIONS['right'] : (1, 1),
+            DIRECTIONS['down'] + DIRECTIONS['left'] : (-1, -1),
+            DIRECTIONS['down'] + DIRECTIONS['right'] : (1, -1)
+        }
+
+
+        x, y = positions[self.facing]
+        egg = Egg(self.x + x, self.y + y, COLOURS['white'], facing=self.facing)
+        world.add_object(egg)
 
     def take_damage(self, damage, world):
         self.health -= damage
@@ -212,7 +229,6 @@ class Monster(WorldObject):
                 populate(x - 2, y - 2)
                 populate(x - 1, y - 1)
         else:
-            self._rotated = True
             for x in xrange(xs, xs + self.height):
                 for y in xrange(ys, ys + self.width):
                     populate(x, y)
