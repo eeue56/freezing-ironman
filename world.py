@@ -108,6 +108,7 @@ class World(object):
         j = 0
 
         visited = []
+        last_visited_count = 0
 
         while True:
             for n in range(x - i, x + i):
@@ -127,8 +128,14 @@ class World(object):
                             return (n, m)
                         else:
                             visited.append((n, m))
+
+            if last_visited_count == len(visited):
+                break
+
+            last_visited_count = len(visited)
             i += 1
             j += 1
+        return (-1, -1)
 
 
     def find_path_to_point(self, object_, x, y):

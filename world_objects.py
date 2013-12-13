@@ -6,6 +6,9 @@ from misc import *
 from global_exceptions import *
 
 class WorldObject(object):
+    """ World object class - super class for anything contained 
+        in the world space
+    """
     def __init__(self, x, y, color, facing=DIRECTIONS['up'], take_damage=False, moveable=True):
         self.x = x
         self.y = y
@@ -17,6 +20,9 @@ class WorldObject(object):
         self._rotated = False
 
     def draw(self):
+        """ draw method used to draw all the populated squares 
+            by this object - uses clever caching and sections to improve 
+            draw speed """
 
         if (self.x, self.y, self.facing) not in self._section_cache:
             self._section_cache[(self.x, self.y, self.facing)] = into_sections(self.populated_squares)
@@ -33,15 +39,22 @@ class WorldObject(object):
         gl.glPopMatrix() 
 
     def take_damage(self, damage, world):
+        """ tell this object to take damage """
         pass
 
     def tick(self, world):
+        """ a tick is a moment in the world """
         pass
 
     def populated_at(self, x, y):
+        """ returns a list of tuples containing the coordinates of populated 
+            squares, should the square be at this point
+        """
         return [(x, y)]
 
     def closest_point(self, x, y):
+        """ returns the coordinates which are part of this object and
+            closest to x, y """
         x2nd = x ** 2
         y2nd = y ** 2
         euclid = lambda i, j: (x2nd - (i ** 2)) + (y2nd - (j ** 2))
@@ -58,6 +71,8 @@ class WorldObject(object):
         
     @property
     def populated_squares(self):
+        """ returns the populated squares for the current object 
+            clever caching method """
         if (self.x, self.y, self.facing) not in self._square_cache:
             self._square_cache[(self.x, self.y, self.facing)] = self.populated_at(self.x, self.y)
         return self._square_cache[(self.x, self.y, self.facing)]
@@ -74,6 +89,7 @@ class Player(WorldObject):
         self.height = 2
 
     def new_color(self):
+        """ generates a new color """
         o = []
 
         for i in self.color:

@@ -37,11 +37,11 @@ class GLPlotWidget(QGLWidget):
         """
         # clear the buffer
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-        # set yellow color for subsequent drawing rendering calls
         
-        # tell OpenGL that the VBO contains an array of vertices
         gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        
+
+        # call the draw method of the world, which then calls the draw method of 
+        # everythin in the world        
         self.world.draw()
 
     def resizeGL(self, width, height):
@@ -54,7 +54,7 @@ class GLPlotWidget(QGLWidget):
         # set orthographic projection (2D only)
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
-        # the window corner OpenGL coordinates are (-+1, -+1)
+        # the window corner OpenGL coordinates are the same as the world height and width
         gl.glOrtho(0, self.world.width, 0, self.world.height, -1, 1)
 
  
