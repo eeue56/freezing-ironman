@@ -13,17 +13,21 @@ class WorldObject(object):
         self.can_take_damage = take_damage
         self.moveable = moveable
         self._square_cache = {}
+        self._section_cache = {}
 
     def draw(self):
+
+        if (self.x, self.y, self.facing) not in self._section_cache:
+            self._section_cache[(self.x, self.y, self.facing)] = into_sections(self.populated_squares)
+
         gl.glPushMatrix()
 
         r, g, b = self.color
         gl.glColor3f(r, g, b)
 
-        for square in self.populated_squares:
-            x, y = square
-            draw_square(x, y)
-
+        for section in self._section_cache[(self.x, self.y, self.facing)]:
+            (x, y, width, height) = section
+            draw_square(x, y, width, height)
         gl.glPopMatrix() 
 
     def take_damage(self, damage, world):
@@ -34,6 +38,21 @@ class WorldObject(object):
 
     def populated_at(self, x, y):
         return [(x, y)]
+
+    def closest_point(self, x, y):
+        x2nd = x ** 2
+        y2nd = y ** 2
+        euclid = lambda i, j: (x2nd - (i ** 2)) + (y2nd - (j ** 2))
+
+        small_score = 9000001
+        smallest = None
+
+        for (x, y) in self.populated_squares:
+            score = euclid(x, y)
+            if score < small_score:
+                smallest = (x, y)
+                small_score = score
+        return smallest
         
     @property
     def populated_squares(self):
@@ -43,12 +62,12 @@ class WorldObject(object):
 
 
 class Player(WorldObject):
-    def __init__(self, x, y, health=3, color=COLOURS['grey']):
+    def __init__(self, x, y, speed=1, health=3, color=COLOURS['grey']):
         WorldObject.__init__(self, x, y, color, take_damage=True)
         self.health = health
         self.facing = DIRECTIONS['up']
-        self.movement_facing = DIRECTIONS['up']
-        self.speed = 0
+        self.movement_facing = DIRECTIONS['still']
+        self.speed = speed
         self.width = 5
         self.height = 2
 
@@ -129,7 +148,7 @@ class Monster(WorldObject):
     def __init__(self, x, y, speed=1, health=3, color=COLOURS['grey']):
         WorldObject.__init__(self, x, y, color, take_damage=True)
         self.health = health
-        self.speed = 0
+        self.speed = speed
         self.facing = DIRECTIONS['up']
         self.width = 5
         self.height = 2
@@ -153,6 +172,8 @@ class Monster(WorldObject):
         self.color = tuple(o)
 
     def tick(self, world):
+        new_face = world.find_path(self, world.player)
+        self.facing = new_face
         try:
             world.move_object(self, self.facing, self.speed)
         except CollisionException as e:
@@ -218,7 +239,6 @@ class Egg(WorldObject):
         try:
             world.move_object(self, self.facing, self.speed)
         except CollisionException as e:
-            print 'collided'
             if e.other.can_take_damage:
                 e.other.take_damage(1, world)
             world.remove_object(self)
@@ -236,7 +256,7 @@ class Egg(WorldObject):
         return [(x, y)]
 
 class Wall(WorldObject):
-    def __init__(self, x, y, width=2, gaps=None, color=COLOURS['grey'], facing=DIRECTIONS['up'], speed=1):
+    def __init__(self, x, y, width=5, gaps=None, color=COLOURS['grey'], facing=DIRECTIONS['up'], speed=1):
         WorldObject.__init__(self, x, y, color, take_damage=False, moveable=False)
 
         if gaps is None:
@@ -246,7 +266,7 @@ class Wall(WorldObject):
         self.facing = facing
         self.speed = speed
         self.width = width
-        self.height = 1
+        self.height = 2
         self.health = 1
 
     def tick(self, world):

@@ -131,12 +131,37 @@ class World(object):
     def move_player(self, direction, distance=1):
         self.move_object(self.player, direction, distance)
 
+    def find_path_to_point(self, object_, x, y):
+        my_x, my_y = object_.x, object_.y
+
+        direction = DIRECTIONS['still']
+
+        if my_x < x:
+            direction += DIRECTIONS['right']
+        elif my_x > x:
+            direction += DIRECTIONS['left']
+    
+        if my_y < y:
+            direction += DIRECTIONS['up']
+        elif my_y > y:
+            direction += DIRECTIONS['down']
+
+        return direction
+
+    def find_path(self, object_, other_object):
+        my_x, my_y = object_.x, object_.y
+        (x, y) = other_object.closest_point(my_x, my_y)
+        return self.find_path_to_point(object_, x, y)
+
     def remove_object(self, object_):
         self._removing = True
         for (x, y) in object_.populated_squares:
             self.object_array[y][x] = None
-        self.objects.remove(object_)
 
+        try:
+            self.objects.remove(object_)
+        except ValueError:
+            pass
         self._removing = False
 
 

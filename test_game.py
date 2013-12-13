@@ -55,7 +55,7 @@ class GLPlotWidget(QGLWidget):
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
         # the window corner OpenGL coordinates are (-+1, -+1)
-        gl.glOrtho(0, 100, 0, 100, -1, 1)
+        gl.glOrtho(0, self.world.width, 0, self.world.height, -1, 1)
 
  
 if __name__ == '__main__':
@@ -70,36 +70,39 @@ if __name__ == '__main__':
             super(TestWindow, self).__init__()
             # initialize the GL widget
 
-            self.player = Player(50, 50)
+            world_height = 175
+            world_width = 175
+
+            self.player = Player(110, 110, speed=2)
             levels = [
                 [
-                    Wall(100, 100, facing=DIRECTIONS['left'], gaps=range(30, 60)),
-                    Wall(100, 100, facing=DIRECTIONS['down']),
-                    Wall(100, 100, facing=DIRECTIONS['up']),
-                    Wall(100, 100, facing=DIRECTIONS['right']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['left'], gaps=range(30, 60)),
+                    Wall(world_width, world_height, facing=DIRECTIONS['down']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['up']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['right']),
                     Monster(70, 70, color=COLOURS['white']),
                     Monster(23, 25, color=COLOURS['grey']),
                     Monster(53, 83, color=COLOURS['white']),
                     Monster(10, 40, color=COLOURS['grey'])
                 ],
                 [
-                    Wall(100, 100, facing=DIRECTIONS['left']),
-                    Wall(100, 100, facing=DIRECTIONS['down']),
-                    Wall(100, 100, facing=DIRECTIONS['up']),
-                    Wall(100, 100, facing=DIRECTIONS['right'], gaps=range(60, 90)),
+                    Wall(world_width, world_height, facing=DIRECTIONS['left']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['down']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['up']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['right'], gaps=range(60, 90)),
                     Monster(23, 25, color=COLOURS['grey']),
                     Monster(53, 83, color=COLOURS['white']),
                     Monster(10, 40, color=COLOURS['grey'])
                 ],
                 [
-                    Wall(100, 100, facing=DIRECTIONS['up']),
-                    Wall(100, 100, facing=DIRECTIONS['down']),
-                    Wall(100, 100, facing=DIRECTIONS['left']),
-                    Wall(100, 100, facing=DIRECTIONS['right'])
+                    Wall(world_width, world_height, facing=DIRECTIONS['up']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['down']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['left']),
+                    Wall(world_width, world_height, facing=DIRECTIONS['right'])
                 ]
             ]
 
-            self.world = World(self.player, levels=levels)
+            self.world = World(self.player, levels=levels, width=world_width, height=world_height)
 
             self.widget = GLPlotWidget(100, 100, self.world)
             self.color = COLOURS['white']
@@ -143,22 +146,17 @@ if __name__ == '__main__':
             player_movement = -50
             face_movement = -50
             egg_direction = -50
-            self.world.player.speed = 0
             egg = None
 
             for key in self.keys:  
 
                 if key == QtCore.Qt.Key_A:
-                    self.world.player.speed = 1
                     face_movement += DIRECTIONS['left']
                 elif key == QtCore.Qt.Key_D:
-                    self.world.player.speed = 1
                     face_movement += DIRECTIONS['right']
                 elif key == QtCore.Qt.Key_W:
-                    self.world.player.speed = 1
                     face_movement += DIRECTIONS['up']
                 elif key == QtCore.Qt.Key_S:
-                    self.world.player.speed = 1
                     face_movement += DIRECTIONS['down']
                     
 
@@ -194,6 +192,8 @@ if __name__ == '__main__':
 
             if face_movement > -50:
                 self.world.player.movement_facing = face_movement + 50
+            else:
+                self.world.player.movement_facing = DIRECTIONS['still']
 
 
 
