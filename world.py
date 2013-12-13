@@ -70,7 +70,7 @@ class World(object):
         object_.y += y
 
     def _dirty_move(self, object_, direction, distance):
-        if distance <= 0:
+        if distance <= 0 or direction == DIRECTIONS['still']:
             return
 
         if direction == DIRECTIONS['up']:
