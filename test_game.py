@@ -102,8 +102,8 @@ if __name__ == '__main__':
                 ]
             ]
 
-            levels[0].extend([Monster(randint(0, world_width - 1), 
-                randint(0, world_height - 1)) for x in xrange(30)])
+            levels[0].extend([Monster(randint(0, world_width - 9), 
+                randint(0, world_height - 9)) for x in xrange(90)])
 
             self.world = World(self.player, levels=levels, width=world_width, height=world_height)
 
